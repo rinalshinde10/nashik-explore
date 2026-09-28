@@ -1,5 +1,7 @@
 # Nashik Explore
 
+![#Nashik Explore](Readme-img.png)
+
 Nashik Explore is a full-stack web application that helps users explore
 tourist places in Nashik.
 
@@ -20,19 +22,23 @@ their location, timings, description, and other details.
 ## Technologies Used
 
 ### Frontend
+
 - React.js
 - HTML
 - CSS
 - JavaScript
 
 ### Backend
+
 - Node.js
 - Express.js
 
 ### Database
+
 - MongoDB
 
 ### Tools
+
 - Git
 - GitHub
 - Postman
@@ -43,10 +49,23 @@ their location, timings, description, and other details.
 nashik-explore
 │
 ├── client
-│   └── React frontend
+│   ├── public
+│   └── src
+│       ├── assets
+│       │   └── nashik-explore-banner.png
+│       ├── components
+│       ├── pages
+│       ├── services
+│       ├── context
+│       └── utils
 │
 ├── server
-│   └── Node.js + Express backend
+│   ├── config
+│   ├── controllers
+│   ├── middleware
+│   ├── models
+│   ├── routes
+│   └── utils
 │
 ├── .gitignore
 └── README.md
