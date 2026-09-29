@@ -9,6 +9,7 @@ import placeRoutes from "./routes/placeRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import errorMiddleware from "./middleware/errorMiddleware.js";
 
 dotenv.config();
 
@@ -35,6 +36,8 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/favorites", favoriteRoutes);
 
 app.use("/api/users", userRoutes);
+
+app.use(errorMiddleware);
 
 // Home Route
 app.get("/", (req, res) => {
