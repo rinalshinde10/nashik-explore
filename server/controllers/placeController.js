@@ -1,4 +1,5 @@
 import Place from "../models/Place.js";
+import Review from "../models/Review.js";
 
 
 // Create Place
@@ -50,7 +51,7 @@ export const createPlace = async (req, res) => {
 };
 
 
-// Get All Places with Search and Filter
+// Get All Places with Search, Filter and Rating
 export const getPlaces = async (req, res) => {
     try {
         const { search, category, location } = req.query;
@@ -83,10 +84,35 @@ export const getPlaces = async (req, res) => {
             .populate("createdBy", "name email")
             .sort({ createdAt: -1 });
 
+        // Calculate average rating and total reviews
+        const placesWithRating = await Promise.all(
+            places.map(async (place) => {
+                const reviews = await Review.find({
+                    place: place._id
+                });
+
+                const totalReviews = reviews.length;
+
+                const averageRating =
+                    totalReviews > 0
+                        ? reviews.reduce(
+                            (sum, review) => sum + review.rating,
+                            0
+                        ) / totalReviews
+                        : 0;
+
+                return {
+                    ...place.toObject(),
+                    averageRating: Number(averageRating.toFixed(1)),
+                    totalReviews
+                };
+            })
+        );
+
         res.status(200).json({
             success: true,
-            count: places.length,
-            places
+            count: placesWithRating.length,
+            places: placesWithRating
         });
 
     } catch (error) {
