@@ -1,5 +1,7 @@
 import Place from "../models/Place.js";
 
+
+// Create Place
 export const createPlace = async (req, res) => {
     try {
         const {
@@ -48,6 +50,7 @@ export const createPlace = async (req, res) => {
 };
 
 
+// Get All Places
 export const getPlaces = async (req, res) => {
     try {
         const places = await Place.find()
@@ -65,6 +68,72 @@ export const getPlaces = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Failed to fetch places",
+            error: error.message
+        });
+    }
+};
+
+
+// Update Place
+export const updatePlace = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const updatedPlace = await Place.findByIdAndUpdate(
+            id,
+            req.body,
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!updatedPlace) {
+            return res.status(404).json({
+                success: false,
+                message: "Place not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Place updated successfully",
+            place: updatedPlace
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to update place",
+            error: error.message
+        });
+    }
+};
+
+
+// Delete Place
+export const deletePlace = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedPlace = await Place.findByIdAndDelete(id);
+
+        if (!deletedPlace) {
+            return res.status(404).json({
+                success: false,
+                message: "Place not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Place deleted successfully"
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to delete place",
             error: error.message
         });
     }
