@@ -4,7 +4,6 @@ import cors from "cors";
 
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
-import authMiddleware from "./middleware/authMiddleware.js";
 
 dotenv.config();
 
@@ -24,15 +23,6 @@ app.use("/api/auth", authRoutes);
 app.get("/", (req, res) => {
     res.json({
         message: "Nashik Explore API is running"
-    });
-});
-
-// Protected Test Route
-app.get("/api/test-protected", authMiddleware, (req, res) => {
-    res.json({
-        success: true,
-        message: "Protected route accessed successfully",
-        user: req.user
     });
 });
 
