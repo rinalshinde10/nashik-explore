@@ -4,6 +4,8 @@ import cors from "cors";
 
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+import placeRoutes from "./routes/placeRoutes.js";
 
 dotenv.config();
 
@@ -18,6 +20,12 @@ connectDB();
 
 // Authentication Routes
 app.use("/api/auth", authRoutes);
+
+// Category Routes
+app.use("/api/categories", categoryRoutes);
+
+// Place Routes
+app.use("/api/places", placeRoutes);
 
 // Home Route
 app.get("/", (req, res) => {

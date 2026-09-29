@@ -1,24 +1,22 @@
 import express from "express";
 
 import {
-    createPlace,
-    getPlaces
-} from "../controllers/placeController.js";
+    createCategory,
+    getCategories
+} from "../controllers/categoryController.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
 import adminMiddleware from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 
-// Get all places
-router.get("/", getPlaces);
+router.get("/", getCategories);
 
-// Create new place - Admin only
 router.post(
     "/",
     authMiddleware,
     adminMiddleware,
-    createPlace
+    createCategory
 );
 
 export default router;
