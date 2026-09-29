@@ -1,40 +1,26 @@
-
 import express from "express";
-import mongoose from "mongoose";
-import cors from "cors";
 import dotenv from "dotenv";
+import cors from "cors";
+
+import connectDB from "./config/db.js";
 
 dotenv.config();
 
 const app = express();
 
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
-const connectDB = async () => {
+connectDB();
 
-    try {
-        const conn = await mongoose.connect(process.env.MONGODB_URL);
-        if (conn) {
-            console.log("MongoDB connected");
-        }
-    } catch (error) {
-        console.error("MongoDB connection error:",error);
-    }
-};
-
-
-app.get("/", (req, res)  => {
+app.get("/", (req, res) => {
     res.json({
-        success:true,
-        message:"API is running....",
+        message: "Nashik Explore API is running"
     });
 });
 
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    connectDB();
+    console.log(`Server running on port ${PORT}`);
 });
-
