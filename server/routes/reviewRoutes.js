@@ -2,7 +2,9 @@ import express from "express";
 
 import {
     createReview,
-    getPlaceReviews
+    getPlaceReviews,
+    updateReview,
+    deleteReview
 } from "../controllers/reviewController.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
@@ -22,6 +24,22 @@ router.post(
 router.get(
     "/place/:placeId",
     getPlaceReviews
+);
+
+
+// Update Own Review
+router.put(
+    "/:id",
+    authMiddleware,
+    updateReview
+);
+
+
+// Delete Own Review
+router.delete(
+    "/:id",
+    authMiddleware,
+    deleteReview
 );
 
 

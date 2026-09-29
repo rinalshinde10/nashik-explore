@@ -69,3 +69,89 @@ export const getPlaceReviews = async (req, res) => {
         });
     }
 };
+
+
+// Update Review
+export const updateReview = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { rating, comment } = req.body;
+
+        const review = await Review.findById(id);
+
+        if (!review) {
+            return res.status(404).json({
+                success: false,
+                message: "Review not found"
+            });
+        }
+
+        if (review.user.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "You can update only your own review"
+            });
+        }
+
+        if (rating !== undefined) {
+            review.rating = rating;
+        }
+
+        if (comment !== undefined) {
+            review.comment = comment;
+        }
+
+        await review.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Review updated successfully",
+            review
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to update review",
+            error: error.message
+        });
+    }
+};
+
+
+// Delete Review
+export const deleteReview = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const review = await Review.findById(id);
+
+        if (!review) {
+            return res.status(404).json({
+                success: false,
+                message: "Review not found"
+            });
+        }
+
+        if (review.user.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "You can delete only your own review"
+            });
+        }
+
+        await Review.findByIdAndDelete(id);
+
+        res.status(200).json({
+            success: true,
+            message: "Review deleted successfully"
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to delete review",
+            error: error.message
+        });
+    }
+};
