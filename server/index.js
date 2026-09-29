@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import placeRoutes from "./routes/placeRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import favoriteRoutes from "./routes/favoriteRoutes.js";
 
 dotenv.config();
 
@@ -29,6 +30,8 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/places", placeRoutes);
 
 app.use("/api/reviews", reviewRoutes);
+
+app.use("/api/favorites", favoriteRoutes);
 
 // Home Route
 app.get("/", (req, res) => {
