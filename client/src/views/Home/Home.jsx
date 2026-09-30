@@ -1,6 +1,10 @@
 import "./Home.css";
+
 import Heading from "../../components/Heading/Heading";
 import "../../components/Heading/Heading.css";
+
+import Cards from "../../components/Cards/Cards";
+import "../../components/Cards/Cards.css";
 
 function Home() {
     return (
@@ -62,124 +66,47 @@ function Home() {
 
                 <div className="categories-container">
 
-                    <div className="category-card">
+                    <Cards
+                        title="Religious Places"
+                        description="Explore famous temples and spiritual destinations in Nashik."
+                        icon="🛕"
+                        buttonText="Explore Category →"
+                    />
 
-                        <div className="category-icon">
-                            🛕
-                        </div>
+                    <Cards
+                        title="Historical Places"
+                        description="Discover ancient caves, monuments and historically important places."
+                        icon="🏛️"
+                        buttonText="Explore Category →"
+                    />
 
-                        <h3>Religious Places</h3>
+                    <Cards
+                        title="Nature & Waterfalls"
+                        description="Visit beautiful waterfalls, natural spots and peaceful destinations."
+                        icon="🌿"
+                        buttonText="Explore Category →"
+                    />
 
-                        <p>
-                            Explore famous temples and spiritual
-                            destinations in Nashik.
-                        </p>
+                    <Cards
+                        title="Forts"
+                        description="Explore famous forts and trekking destinations around Nashik."
+                        icon="🏰"
+                        buttonText="Explore Category →"
+                    />
 
-                        <button className="category-button">
-                            Explore Category →
-                        </button>
+                    <Cards
+                        title="Vineyards"
+                        description="Discover vineyards and scenic destinations around Nashik."
+                        icon="🍇"
+                        buttonText="Explore Category →"
+                    />
 
-                    </div>
-
-
-                    <div className="category-card">
-
-                        <div className="category-icon">
-                            🏛️
-                        </div>
-
-                        <h3>Historical Places</h3>
-
-                        <p>
-                            Discover ancient caves, monuments and
-                            historically important places.
-                        </p>
-
-                        <button className="category-button">
-                            Explore Category →
-                        </button>
-
-                    </div>
-
-
-                    <div className="category-card">
-
-                        <div className="category-icon">
-                            🌿
-                        </div>
-
-                        <h3>Nature & Waterfalls</h3>
-
-                        <p>
-                            Visit beautiful waterfalls, natural spots
-                            and peaceful destinations.
-                        </p>
-
-                        <button className="category-button">
-                            Explore Category →
-                        </button>
-
-                    </div>
-
-
-                    <div className="category-card">
-
-                        <div className="category-icon">
-                            🏰
-                        </div>
-
-                        <h3>Forts</h3>
-
-                        <p>
-                            Explore famous forts and trekking destinations
-                            around Nashik.
-                        </p>
-
-                        <button className="category-button">
-                            Explore Category →
-                        </button>
-
-                    </div>
-
-
-                    <div className="category-card">
-
-                        <div className="category-icon">
-                            🍇
-                        </div>
-
-                        <h3>Vineyards</h3>
-
-                        <p>
-                            Discover vineyards and scenic destinations
-                            around Nashik.
-                        </p>
-
-                        <button className="category-button">
-                            Explore Category →
-                        </button>
-
-                    </div>
-
-
-                    <div className="category-card">
-
-                        <div className="category-icon">
-                            🏺
-                        </div>
-
-                        <h3>Museums</h3>
-
-                        <p>
-                            Learn about Nashik's culture, history and
-                            interesting collections.
-                        </p>
-
-                        <button className="category-button">
-                            Explore Category →
-                        </button>
-
-                    </div>
+                    <Cards
+                        title="Museums"
+                        description="Learn about Nashik's culture, history and interesting collections."
+                        icon="🏺"
+                        buttonText="Explore Category →"
+                    />
 
                 </div>
 
