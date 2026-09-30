@@ -1,5 +1,7 @@
 import "./Home.css";
 
+import { useNavigate } from "react-router-dom";
+
 import Heading from "../../components/Heading/Heading";
 import "../../components/Heading/Heading.css";
 
@@ -7,6 +9,9 @@ import Cards from "../../components/Cards/Cards";
 import "../../components/Cards/Cards.css";
 
 function Home() {
+
+    const navigate = useNavigate();
+
     return (
         <main className="home">
 
@@ -29,7 +34,10 @@ function Home() {
                         across Nashik.
                     </p>
 
-                    <button className="explore-button">
+                    <button
+                        className="explore-button"
+                        onClick={() => navigate("/places")}
+                    >
                         Explore Places
                     </button>
 
