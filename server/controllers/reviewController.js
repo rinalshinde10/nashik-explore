@@ -2,15 +2,22 @@ import Review from "../models/Review.js";
 import Place from "../models/Place.js";
 
 
-// Create Review
+// Create or Update Rating
 export const createReview = async (req, res) => {
     try {
-        const { place, rating, comment } = req.body;
+        const { place, rating } = req.body;
 
-        if (!place || !rating || !comment) {
+        if (!place || !rating) {
             return res.status(400).json({
                 success: false,
-                message: "Please enter place, rating and comment"
+                message: "Please provide place and rating"
+            });
+        }
+
+        if (rating < 1 || rating > 5) {
+            return res.status(400).json({
+                success: false,
+                message: "Rating must be between 1 and 5"
             });
         }
 
@@ -23,25 +30,47 @@ export const createReview = async (req, res) => {
             });
         }
 
-        const review = await Review.create({
+        // Check if user already rated this place
+        const existingReview = await Review.findOne({
             user: req.user.id,
-            place,
-            rating,
-            comment
+            place
         });
 
-        res.status(201).json({
+        let review;
+
+        if (existingReview) {
+
+            existingReview.rating = rating;
+
+            await existingReview.save();
+
+            review = existingReview;
+
+        } else {
+
+            review = await Review.create({
+                user: req.user.id,
+                place,
+                rating,
+                comment: ""
+            });
+
+        }
+
+        res.status(200).json({
             success: true,
-            message: "Review added successfully",
+            message: "Rating saved successfully",
             review
         });
 
     } catch (error) {
+
         res.status(500).json({
             success: false,
-            message: "Failed to add review",
+            message: "Failed to save rating",
             error: error.message
         });
+
     }
 };
 
@@ -49,9 +78,12 @@ export const createReview = async (req, res) => {
 // Get Reviews for a Place
 export const getPlaceReviews = async (req, res) => {
     try {
+
         const { placeId } = req.params;
 
-        const reviews = await Review.find({ place: placeId })
+        const reviews = await Review.find({
+            place: placeId
+        })
             .populate("user", "name")
             .sort({ createdAt: -1 });
 
@@ -62,11 +94,13 @@ export const getPlaceReviews = async (req, res) => {
         });
 
     } catch (error) {
+
         res.status(500).json({
             success: false,
             message: "Failed to fetch reviews",
             error: error.message
         });
+
     }
 };
 
@@ -74,8 +108,9 @@ export const getPlaceReviews = async (req, res) => {
 // Update Review
 export const updateReview = async (req, res) => {
     try {
+
         const { id } = req.params;
-        const { rating, comment } = req.body;
+        const { rating } = req.body;
 
         const review = await Review.findById(id);
 
@@ -94,27 +129,33 @@ export const updateReview = async (req, res) => {
         }
 
         if (rating !== undefined) {
-            review.rating = rating;
-        }
 
-        if (comment !== undefined) {
-            review.comment = comment;
+            if (rating < 1 || rating > 5) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Rating must be between 1 and 5"
+                });
+            }
+
+            review.rating = rating;
         }
 
         await review.save();
 
         res.status(200).json({
             success: true,
-            message: "Review updated successfully",
+            message: "Rating updated successfully",
             review
         });
 
     } catch (error) {
+
         res.status(500).json({
             success: false,
-            message: "Failed to update review",
+            message: "Failed to update rating",
             error: error.message
         });
+
     }
 };
 
@@ -122,6 +163,7 @@ export const updateReview = async (req, res) => {
 // Delete Review
 export const deleteReview = async (req, res) => {
     try {
+
         const { id } = req.params;
 
         const review = await Review.findById(id);
@@ -144,14 +186,16 @@ export const deleteReview = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "Review deleted successfully"
+            message: "Rating deleted successfully"
         });
 
     } catch (error) {
+
         res.status(500).json({
             success: false,
-            message: "Failed to delete review",
+            message: "Failed to delete rating",
             error: error.message
         });
+
     }
 };

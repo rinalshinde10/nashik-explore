@@ -12,7 +12,7 @@ import authMiddleware from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 
-// Create Review - Logged-in User
+// Create Rating
 router.post(
     "/",
     authMiddleware,
@@ -20,14 +20,14 @@ router.post(
 );
 
 
-// Get Reviews for a Place
+// Get Ratings for a Place
 router.get(
     "/place/:placeId",
     getPlaceReviews
 );
 
 
-// Update Own Review
+// Update Own Rating
 router.put(
     "/:id",
     authMiddleware,
@@ -35,7 +35,7 @@ router.put(
 );
 
 
-// Delete Own Review
+// Delete Own Rating
 router.delete(
     "/:id",
     authMiddleware,
