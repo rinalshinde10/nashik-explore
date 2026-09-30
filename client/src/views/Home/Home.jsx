@@ -1,7 +1,10 @@
-import "./Home.css";
-import Button from "../../components/Button/Button";
 
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import "./Home.css";
+
+import Button from "../../components/Button/Button";
 
 import Heading from "../../components/Heading/Heading";
 import "../../components/Heading/Heading.css";
@@ -9,49 +12,143 @@ import "../../components/Heading/Heading.css";
 import Cards from "../../components/Cards/Cards";
 import "../../components/Cards/Cards.css";
 
+import { getCategories } from "../../services/category_service";
+
+
 function Home() {
 
     const navigate = useNavigate();
 
+
+    const [categories, setCategories] = useState([]);
+
+    const [loading, setLoading] = useState(true);
+
+    const [error, setError] = useState("");
+
+
+    // =============================
+    // FETCH CATEGORIES
+    // =============================
+
+    useEffect(() => {
+
+        const fetchCategories = async () => {
+
+            try {
+
+                setLoading(true);
+
+                setError("");
+
+                const data = await getCategories();
+
+                console.log("Home Categories:", data);
+
+                setCategories(
+                    data.categories || []
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Error fetching categories:",
+                    error.message
+                );
+
+                setError(
+                    "Unable to load categories."
+                );
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        };
+
+
+        fetchCategories();
+
+    }, []);
+
+
+    // =============================
+    // CATEGORY CLICK
+    // =============================
+
+    const handleCategoryClick = (categoryId) => {
+
+        navigate(
+            `/places?category=${categoryId}`
+        );
+
+    };
+
+
     return (
+
         <main className="home">
 
-            {/* Hero Section */}
+
+            {/* ============================= */}
+            {/* HERO SECTION */}
+            {/* ============================= */}
+
             <section className="hero-section">
+
                 <div className="hero-content">
 
                     <p className="hero-tag">
                         EXPLORE • DISCOVER • EXPERIENCE
                     </p>
 
+
                     <h1>
+
                         Discover the Beauty of
-                        <span> Nashik</span>
+
+                        <span>
+                            {" "}Nashik
+                        </span>
+
                     </h1>
 
+
                     <p className="hero-description">
-                        Explore temples, historical places, waterfalls,
-                        vineyards, forts and other beautiful destinations
-                        across Nashik.
+
+                        Explore temples, historical places,
+                        waterfalls, vineyards, forts and
+                        other beautiful destinations across Nashik.
+
                     </p>
 
-                   <Button
-    className="explore-button"
-    onClick={() => navigate("/places")}
->
-    Explore Places
-</Button>
+
+                    <Button
+                        className="explore-button"
+                        onClick={() =>
+                            navigate("/places")
+                        }
+                    >
+                        Explore Places
+                    </Button>
 
                 </div>
+
             </section>
 
 
-            {/* Welcome Section */}
+            {/* ============================= */}
+            {/* WELCOME SECTION */}
+            {/* ============================= */}
+
             <section className="welcome-section">
 
                 <p className="section-label">
                     WELCOME TO NASHIK
                 </p>
+
 
                 <Heading
                     title="Explore Nashik Like Never Before"
@@ -61,80 +158,120 @@ function Home() {
             </section>
 
 
-            {/* Explore Categories Section */}
+            {/* ============================= */}
+            {/* CATEGORIES SECTION */}
+            {/* ============================= */}
+
             <section className="categories-section">
 
                 <p className="section-label">
                     EXPLORE BY CATEGORY
                 </p>
 
+
                 <Heading
                     title="Discover Places Based on Your Interest"
                     subtitle="Choose a category and explore the different places available in Nashik."
                 />
 
+
                 <div className="categories-container">
 
-                    <Cards
-                        title="Religious Places"
-                        description="Explore famous temples and spiritual destinations in Nashik."
-                        icon="🛕"
-                        buttonText="Explore Category →"
-                    />
 
-                    <Cards
-                        title="Historical Places"
-                        description="Discover ancient caves, monuments and historically important places."
-                        icon="🏛️"
-                        buttonText="Explore Category →"
-                    />
+                    {/* LOADING */}
 
-                    <Cards
-                        title="Nature & Waterfalls"
-                        description="Visit beautiful waterfalls, natural spots and peaceful destinations."
-                        icon="🌿"
-                        buttonText="Explore Category →"
-                    />
+                    {loading && (
 
-                    <Cards
-                        title="Forts"
-                        description="Explore famous forts and trekking destinations around Nashik."
-                        icon="🏰"
-                        buttonText="Explore Category →"
-                    />
+                        <p className="categories-message">
+                            Loading categories...
+                        </p>
 
-                    <Cards
-                        title="Vineyards"
-                        description="Discover vineyards and scenic destinations around Nashik."
-                        icon="🍇"
-                        buttonText="Explore Category →"
-                    />
+                    )}
 
-                    <Cards
-                        title="Museums"
-                        description="Learn about Nashik's culture, history and interesting collections."
-                        icon="🏺"
-                        buttonText="Explore Category →"
-                    />
+
+                    {/* ERROR */}
+
+                    {!loading && error && (
+
+                        <p className="categories-message">
+                            {error}
+                        </p>
+
+                    )}
+
+
+                    {/* REAL CATEGORIES */}
+
+                    {!loading &&
+                        !error &&
+                        categories.length > 0 &&
+
+                        categories.map((category) => (
+
+                            <Cards
+                                key={category._id}
+
+                                title={category.name}
+
+                                description={
+                                    category.description ||
+                                    `Explore ${category.name} places in Nashik.`
+                                }
+
+                                icon={
+                                    category.icon ||
+                                    "📍"
+                                }
+
+                                buttonText="Explore Category →"
+
+                                onClick={() =>
+                                    handleCategoryClick(
+                                        category._id
+                                    )
+                                }
+                            />
+
+                        ))
+                    }
+
+
+                    {/* NO CATEGORIES */}
+
+                    {!loading &&
+                        !error &&
+                        categories.length === 0 && (
+
+                            <p className="categories-message">
+                                No categories available.
+                            </p>
+
+                        )}
 
                 </div>
 
             </section>
 
 
-            {/* Why Nashik Explore */}
+            {/* ============================= */}
+            {/* WHY NASHIK EXPLORE */}
+            {/* ============================= */}
+
             <section className="why-section">
 
                 <p className="section-label">
                     WHY NASHIK EXPLORE?
                 </p>
 
+
                 <Heading
                     title="Everything You Need to Explore Nashik"
                     subtitle="Discover places, explore categories and save your favorite destinations in one place."
                 />
 
+
                 <div className="features-container">
+
 
                     <div className="feature-card">
 
@@ -143,8 +280,9 @@ function Home() {
                         </h3>
 
                         <p>
-                            Find temples, historical places, nature spots,
-                            forts and other attractions.
+                            Find temples, historical places,
+                            nature spots, forts and other
+                            attractions.
                         </p>
 
                     </div>
@@ -157,8 +295,9 @@ function Home() {
                         </h3>
 
                         <p>
-                            Find places easily by selecting a category
-                            according to your interests.
+                            Find places easily by selecting
+                            a category according to your
+                            interests.
                         </p>
 
                     </div>
@@ -171,18 +310,24 @@ function Home() {
                         </h3>
 
                         <p>
-                            Save your favorite places and access them
-                            whenever you want.
+                            Save your favorite places and
+                            access them whenever you want.
                         </p>
 
                     </div>
+
 
                 </div>
 
             </section>
 
+
         </main>
+
     );
+
 }
 
+
 export default Home;
+
