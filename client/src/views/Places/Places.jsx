@@ -19,7 +19,6 @@ function Places() {
     const [search, setSearch] = useState("");
     const [category, setCategory] = useState("");
 
-    // User selected ratings
     const [userRatings, setUserRatings] = useState({});
 
 
@@ -59,7 +58,7 @@ function Places() {
 
             console.error(
                 "Error fetching places:",
-                error.response?.data || error.message
+                error.message
             );
 
         }
@@ -84,7 +83,7 @@ function Places() {
 
             console.error(
                 "Error fetching categories:",
-                error.response?.data || error.message
+                error.message
             );
 
         }
@@ -130,15 +129,10 @@ function Places() {
         try {
 
             const data = await createReview({
-
                 place: placeId,
-
                 rating: rating,
-
                 comment: `Rated ${rating} stars`
-
             });
-
 
             console.log("Rating response:", data);
 
@@ -146,25 +140,20 @@ function Places() {
             // Show selected rating immediately
 
             setUserRatings((previousRatings) => ({
-
                 ...previousRatings,
-
                 [placeId]: rating
-
             }));
 
 
-            // Refresh places so average rating comes
-            // from backend
+            // Refresh places
 
             await fetchPlaces(search, category);
-
 
         } catch (error) {
 
             console.error(
                 "Error adding rating:",
-                error.response?.data || error.message
+                error.message
             );
 
         }
@@ -181,10 +170,8 @@ function Places() {
         const searchQuery =
             `${place.name}, ${place.location}`;
 
-
         const mapUrl =
             `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`;
-
 
         window.open(mapUrl, "_blank");
 
@@ -221,9 +208,7 @@ function Places() {
                 {/* SEARCH + CATEGORY */}
                 {/* ============================= */}
 
-                <div
-                    className="places-filters"
-                >
+                <div className="places-filters">
 
 
                     {/* SEARCH */}
@@ -289,7 +274,7 @@ function Places() {
 
 
                             /*
-                             * If user has clicked a star,
+                             * If user has selected a rating,
                              * show that rating.
                              *
                              * Otherwise show backend
@@ -298,7 +283,9 @@ function Places() {
 
                             const selectedRating =
                                 userRatings[place._id] ||
-                                Math.round(place.averageRating || 0);
+                                Math.round(
+                                    place.averageRating || 0
+                                );
 
 
                             return (
@@ -339,35 +326,32 @@ function Places() {
 
                                             <div className="rating-stars">
 
-
                                                 {[1, 2, 3, 4, 5].map(
-                                                    (star)
-                                                 (
+                                                    (star) => (
 
-                                                    <button
-                                                        key={star}
-                                                        type="button"
-                                                        className={
-                                                            star <= selectedRating
-                                                                ? "rating-star active"
-                                                                : "rating-star"
-                                                        }
-                                                        onClick={() =>
-                                                            handleRating(
-                                                                place._id,
-                                                                star
-                                                            )
-                                                        }
-                                                        aria-label={
-                                                            `Rate ${star} stars`
-                                                        }
-                                                    >
+                                                        <button
+                                                            key={star}
+                                                            type="button"
+                                                            className={
+                                                                star <= selectedRating
+                                                                    ? "rating-star active"
+                                                                    : "rating-star"
+                                                            }
+                                                            onClick={() =>
+                                                                handleRating(
+                                                                    place._id,
+                                                                    star
+                                                                )
+                                                            }
+                                                            aria-label={`Rate ${star} stars`}
+                                                        >
 
-                                                        ★
+                                                            ★
 
-                                                    </button>
+                                                        </button>
 
-                                                ))}
+                                                    )
+                                                )}
 
                                             </div>
 
