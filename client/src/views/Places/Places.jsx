@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "./Places.css";
 
@@ -12,6 +13,8 @@ import { createReview } from "../../services/review_service";
 
 
 function Places() {
+
+    const navigate = useNavigate();
 
     const [places, setPlaces] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -137,15 +140,11 @@ function Places() {
             console.log("Rating response:", data);
 
 
-            // Show selected rating immediately
-
             setUserRatings((previousRatings) => ({
                 ...previousRatings,
                 [placeId]: rating
             }));
 
-
-            // Refresh places
 
             await fetchPlaces(search, category);
 
@@ -162,18 +161,12 @@ function Places() {
 
 
     // =============================
-    // GOOGLE MAP
+    // VIEW PLACE DETAILS
     // =============================
 
-    const openLocation = (place) => {
+    const viewPlaceDetails = (placeId) => {
 
-        const searchQuery =
-            `${place.name}, ${place.location}`;
-
-        const mapUrl =
-            `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`;
-
-        window.open(mapUrl, "_blank");
+        navigate(`/places/${placeId}`);
 
     };
 
@@ -273,14 +266,6 @@ function Places() {
                         places.map((place) => {
 
 
-                            /*
-                             * If user has selected a rating,
-                             * show that rating.
-                             *
-                             * Otherwise show backend
-                             * average rating.
-                             */
-
                             const selectedRating =
                                 userRatings[place._id] ||
                                 Math.round(
@@ -312,9 +297,7 @@ function Places() {
                                         {/* ============================= */}
 
                                         <p className="place-category">
-
                                             {place.category?.name}
-
                                         </p>
 
 
@@ -363,9 +346,7 @@ function Places() {
                                         {/* ============================= */}
 
                                         <p className="place-description">
-
                                             {place.description}
-
                                         </p>
 
 
@@ -374,25 +355,23 @@ function Places() {
                                         {/* ============================= */}
 
                                         <p className="place-location">
-
                                             📍 {place.location}
-
                                         </p>
 
 
                                         {/* ============================= */}
-                                        {/* BUTTON */}
+                                        {/* VIEW DETAILS BUTTON */}
                                         {/* ============================= */}
 
                                         <button
                                             className="map-button"
                                             onClick={() =>
-                                                openLocation(place)
+                                                viewPlaceDetails(
+                                                    place._id
+                                                )
                                             }
                                         >
-
                                             View Place Details
-
                                         </button>
 
 
