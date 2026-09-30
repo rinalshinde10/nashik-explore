@@ -1,4 +1,6 @@
 import "./Home.css";
+import Heading from "../../components/Heading/Heading";
+import "../../components/Heading/Heading.css";
 
 function Home() {
     return (
@@ -7,6 +9,7 @@ function Home() {
             {/* Hero Section */}
             <section className="hero-section">
                 <div className="hero-content">
+
                     <p className="hero-tag">
                         EXPLORE • DISCOVER • EXPERIENCE
                     </p>
@@ -25,53 +28,47 @@ function Home() {
                     <button className="explore-button">
                         Explore Places
                     </button>
+
                 </div>
             </section>
 
+
             {/* Welcome Section */}
             <section className="welcome-section">
+
                 <p className="section-label">
                     WELCOME TO NASHIK
                 </p>
 
-                <h2>
-                    Explore Nashik Like Never Before
-                </h2>
+                <Heading
+                    title="Explore Nashik Like Never Before"
+                    subtitle="Nashik Explore helps you discover tourist attractions, historical places, natural destinations and memorable experiences across Nashik."
+                />
 
-                <p className="welcome-description">
-                    Nashik Explore helps you discover tourist attractions,
-                    historical places, natural destinations and memorable
-                    experiences across Nashik. Explore different categories
-                    and find places according to your interests.
-                </p>
             </section>
+
 
             {/* Explore Categories Section */}
             <section className="categories-section">
+
                 <p className="section-label">
                     EXPLORE BY CATEGORY
                 </p>
 
-                <h2>
-                    Discover Places Based on Your Interest
-                </h2>
-
-                <p className="section-description">
-                    Choose a category and explore the different places
-                    available in Nashik.
-                </p>
+                <Heading
+                    title="Discover Places Based on Your Interest"
+                    subtitle="Choose a category and explore the different places available in Nashik."
+                />
 
                 <div className="categories-container">
 
-                    {/* Category 1 */}
                     <div className="category-card">
+
                         <div className="category-icon">
                             🛕
                         </div>
 
-                        <h3>
-                            Religious Places
-                        </h3>
+                        <h3>Religious Places</h3>
 
                         <p>
                             Explore famous temples and spiritual
@@ -81,17 +78,17 @@ function Home() {
                         <button className="category-button">
                             Explore Category →
                         </button>
+
                     </div>
 
-                    {/* Category 2 */}
+
                     <div className="category-card">
+
                         <div className="category-icon">
                             🏛️
                         </div>
 
-                        <h3>
-                            Historical Places
-                        </h3>
+                        <h3>Historical Places</h3>
 
                         <p>
                             Discover ancient caves, monuments and
@@ -101,17 +98,17 @@ function Home() {
                         <button className="category-button">
                             Explore Category →
                         </button>
+
                     </div>
 
-                    {/* Category 3 */}
+
                     <div className="category-card">
+
                         <div className="category-icon">
                             🌿
                         </div>
 
-                        <h3>
-                            Nature & Waterfalls
-                        </h3>
+                        <h3>Nature & Waterfalls</h3>
 
                         <p>
                             Visit beautiful waterfalls, natural spots
@@ -121,17 +118,17 @@ function Home() {
                         <button className="category-button">
                             Explore Category →
                         </button>
+
                     </div>
 
-                    {/* Category 4 */}
+
                     <div className="category-card">
+
                         <div className="category-icon">
                             🏰
                         </div>
 
-                        <h3>
-                            Forts
-                        </h3>
+                        <h3>Forts</h3>
 
                         <p>
                             Explore famous forts and trekking destinations
@@ -141,17 +138,17 @@ function Home() {
                         <button className="category-button">
                             Explore Category →
                         </button>
+
                     </div>
 
-                    {/* Category 5 */}
+
                     <div className="category-card">
+
                         <div className="category-icon">
                             🍇
                         </div>
 
-                        <h3>
-                            Vineyards
-                        </h3>
+                        <h3>Vineyards</h3>
 
                         <p>
                             Discover vineyards and scenic destinations
@@ -161,17 +158,17 @@ function Home() {
                         <button className="category-button">
                             Explore Category →
                         </button>
+
                     </div>
 
-                    {/* Category 6 */}
+
                     <div className="category-card">
+
                         <div className="category-icon">
                             🏺
                         </div>
 
-                        <h3>
-                            Museums
-                        </h3>
+                        <h3>Museums</h3>
 
                         <p>
                             Learn about Nashik's culture, history and
@@ -181,24 +178,30 @@ function Home() {
                         <button className="category-button">
                             Explore Category →
                         </button>
+
                     </div>
 
                 </div>
+
             </section>
+
 
             {/* Why Nashik Explore */}
             <section className="why-section">
+
                 <p className="section-label">
                     WHY NASHIK EXPLORE?
                 </p>
 
-                <h2>
-                    Everything You Need to Explore Nashik
-                </h2>
+                <Heading
+                    title="Everything You Need to Explore Nashik"
+                    subtitle="Discover places, explore categories and save your favorite destinations in one place."
+                />
 
                 <div className="features-container">
 
                     <div className="feature-card">
+
                         <h3>
                             Discover Places
                         </h3>
@@ -207,9 +210,12 @@ function Home() {
                             Find temples, historical places, nature spots,
                             forts and other attractions.
                         </p>
+
                     </div>
 
+
                     <div className="feature-card">
+
                         <h3>
                             Explore Categories
                         </h3>
@@ -218,9 +224,12 @@ function Home() {
                             Find places easily by selecting a category
                             according to your interests.
                         </p>
+
                     </div>
 
+
                     <div className="feature-card">
+
                         <h3>
                             Save Favorites
                         </h3>
@@ -229,9 +238,11 @@ function Home() {
                             Save your favorite places and access them
                             whenever you want.
                         </p>
+
                     </div>
 
                 </div>
+
             </section>
 
         </main>
