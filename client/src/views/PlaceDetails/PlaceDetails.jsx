@@ -2,9 +2,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
+import Button from "../../components/Button/Button";
+
 import "./PlaceDetails.css";
 
 import { getPlaces } from "../../services/place_service";
+
 import {
     getPlaceReviews,
     createReview
@@ -16,6 +19,7 @@ function PlaceDetails() {
     const { id } = useParams();
 
     const navigate = useNavigate();
+
 
     const [place, setPlace] = useState(null);
 
@@ -93,6 +97,7 @@ function PlaceDetails() {
     useEffect(() => {
 
         fetchPlace();
+
         fetchReviews();
 
         window.scrollTo(0, 0);
@@ -119,20 +124,29 @@ function PlaceDetails() {
 
         event.preventDefault();
 
+
         if (!selectedRating) {
+
             alert("Please select a rating.");
+
             return;
+
         }
 
+
         if (!comment.trim()) {
+
             alert("Please enter your review.");
+
             return;
+
         }
 
 
         try {
 
             setSubmitting(true);
+
 
             await createReview({
 
@@ -149,11 +163,14 @@ function PlaceDetails() {
 
             setComment("");
 
+
             await fetchReviews();
 
             await fetchPlace();
 
+
             alert("Review added successfully.");
+
 
         } catch (error) {
 
@@ -162,10 +179,12 @@ function PlaceDetails() {
                 error.message
             );
 
+
             alert(
                 error.message ||
                 "Failed to add review."
             );
+
 
         } finally {
 
@@ -183,7 +202,9 @@ function PlaceDetails() {
     const openLocation = () => {
 
         if (!place) {
+
             return;
+
         }
 
 
@@ -195,7 +216,10 @@ function PlaceDetails() {
             `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`;
 
 
-        window.open(mapUrl, "_blank");
+        window.open(
+            mapUrl,
+            "_blank"
+        );
 
     };
 
@@ -237,12 +261,15 @@ function PlaceDetails() {
                         Place not found
                     </h2>
 
-                    <button
+
+                    <Button
                         className="back-button"
-                        onClick={() => navigate("/places")}
+                        onClick={() =>
+                            navigate("/places")
+                        }
                     >
                         Back to Places
-                    </button>
+                    </Button>
 
                 </div>
 
@@ -266,12 +293,14 @@ function PlaceDetails() {
             {/* BACK BUTTON */}
             {/* ============================= */}
 
-            <button
+            <Button
                 className="back-button"
-                onClick={() => navigate("/places")}
+                onClick={() =>
+                    navigate("/places")
+                }
             >
                 ← Back to Places
-            </button>
+            </Button>
 
 
             {/* ============================= */}
@@ -350,6 +379,7 @@ function PlaceDetails() {
                         <span className="average-rating">
 
                             ⭐{" "}
+
                             {place.averageRating
                                 ? place.averageRating
                                 : "No rating"}
@@ -366,14 +396,14 @@ function PlaceDetails() {
                     </div>
 
 
-                    {/* MAP */}
+                    {/* GOOGLE MAP */}
 
-                    <button
+                    <Button
                         className="details-map-button"
                         onClick={openLocation}
                     >
                         View on Google Maps
-                    </button>
+                    </Button>
 
                 </div>
 
@@ -392,29 +422,36 @@ function PlaceDetails() {
                 </h2>
 
 
+                {/* STAR RATING */}
+
                 <div className="review-stars">
 
-                    {[1, 2, 3, 4, 5].map((star) => (
+                    {[1, 2, 3, 4, 5].map(
+                        (star) => (
 
-                        <button
-                            key={star}
-                            type="button"
-                            className={
-                                star <= selectedRating
-                                    ? "review-star active"
-                                    : "review-star"
-                            }
-                            onClick={() =>
-                                handleRating(star)
-                            }
-                        >
-                            ★
-                        </button>
+                            <button
+                                key={star}
+                                type="button"
+                                className={
+                                    star <= selectedRating
+                                        ? "review-star active"
+                                        : "review-star"
+                                }
+                                onClick={() =>
+                                    handleRating(star)
+                                }
+                                aria-label={`Rate ${star} stars`}
+                            >
+                                ★
+                            </button>
 
-                    ))}
+                        )
+                    )}
 
                 </div>
 
+
+                {/* REVIEW FORM */}
 
                 <form
                     className="review-form"
@@ -431,7 +468,9 @@ function PlaceDetails() {
                     />
 
 
-                    <button
+                    {/* COMMON BUTTON */}
+
+                    <Button
                         type="submit"
                         disabled={submitting}
                     >
@@ -440,7 +479,7 @@ function PlaceDetails() {
                             ? "Submitting..."
                             : "Submit Review"}
 
-                    </button>
+                    </Button>
 
                 </form>
 
@@ -463,39 +502,41 @@ function PlaceDetails() {
 
                     <div className="reviews-list">
 
-                        {reviews.map((review) => (
+                        {reviews.map(
+                            (review) => (
 
-                            <div
-                                className="review-card"
-                                key={review._id}
-                            >
+                                <div
+                                    className="review-card"
+                                    key={review._id}
+                                >
 
-                                <div className="review-card-top">
+                                    <div className="review-card-top">
 
-                                    <strong>
-                                        {review.user?.name ||
-                                            "User"}
-                                    </strong>
+                                        <strong>
+                                            {review.user?.name ||
+                                                "User"}
+                                        </strong>
 
 
-                                    <div className="review-card-stars">
+                                        <div className="review-card-stars">
 
-                                        {"★".repeat(
-                                            review.rating
-                                        )}
+                                            {"★".repeat(
+                                                review.rating
+                                            )}
+
+                                        </div>
 
                                     </div>
 
+
+                                    <p>
+                                        {review.comment}
+                                    </p>
+
                                 </div>
 
-
-                                <p>
-                                    {review.comment}
-                                </p>
-
-                            </div>
-
-                        ))}
+                            )
+                        )}
 
                     </div>
 

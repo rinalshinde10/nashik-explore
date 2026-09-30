@@ -1,6 +1,8 @@
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import Navbar from "./components/Navbar/Navbar";
+
 import Home from "./views/Home/Home";
 import Places from "./views/Places/Places";
 import PlaceDetails from "./views/PlaceDetails/PlaceDetails";
@@ -13,6 +15,11 @@ function App() {
     return (
 
         <BrowserRouter>
+
+            {/* Common Navbar */}
+
+            <Navbar />
+
 
             <Routes>
 

@@ -1,4 +1,5 @@
 import "./Home.css";
+import Button from "../../components/Button/Button";
 
 import { useNavigate } from "react-router-dom";
 
@@ -34,12 +35,12 @@ function Home() {
                         across Nashik.
                     </p>
 
-                    <button
-                        className="explore-button"
-                        onClick={() => navigate("/places")}
-                    >
-                        Explore Places
-                    </button>
+                   <Button
+    className="explore-button"
+    onClick={() => navigate("/places")}
+>
+    Explore Places
+</Button>
 
                 </div>
             </section>

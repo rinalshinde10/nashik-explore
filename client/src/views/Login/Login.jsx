@@ -1,6 +1,11 @@
 
+import "./Login.css";
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import Button from "../../components/Button/Button";
+
 
 function Login() {
 
@@ -12,20 +17,30 @@ function Login() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+
+    // ================================
+    // LOGIN
+    // ================================
+
     const handleSubmit = async (event) => {
 
         event.preventDefault();
 
         setError("");
 
+
         if (!email || !password) {
+
             setError("Please enter email and password");
+
             return;
         }
+
 
         try {
 
             setLoading(true);
+
 
             const response = await fetch(
                 "http://localhost:8080/api/auth/login",
@@ -43,13 +58,17 @@ function Login() {
                 }
             );
 
+
             const data = await response.json();
 
+
             if (!response.ok) {
+
                 throw new Error(
                     data.message || "Login failed"
                 );
             }
+
 
             // ================================
             // SAVE JWT TOKEN
@@ -60,29 +79,48 @@ function Login() {
                 data.token
             );
 
-            // Save logged-in user
+
+            // ================================
+            // SAVE USER
+            // ================================
+
             localStorage.setItem(
                 "user",
                 JSON.stringify(data.user)
             );
 
-            console.log("Login successful");
-            console.log("Token saved:", data.token);
 
-            // Go to Places page
+            console.log("Login successful");
+
+            console.log(
+                "Token saved:",
+                data.token
+            );
+
+
+            // ================================
+            // GO TO PLACES
+            // ================================
+
             navigate("/places");
+
 
         } catch (error) {
 
-            console.error("Login error:", error);
+            console.error(
+                "Login error:",
+                error
+            );
 
             setError(error.message);
+
 
         } finally {
 
             setLoading(false);
 
         }
+
     };
 
 
@@ -96,10 +134,13 @@ function Login() {
                     Login
                 </h1>
 
+
                 <p className="login-subtitle">
                     Login to explore Nashik places
                 </p>
 
+
+                {/* ERROR */}
 
                 {error && (
 
@@ -112,11 +153,15 @@ function Login() {
 
                 <form onSubmit={handleSubmit}>
 
+
+                    {/* EMAIL */}
+
                     <div className="login-field">
 
                         <label>
                             Email
                         </label>
+
 
                         <input
                             type="email"
@@ -130,11 +175,14 @@ function Login() {
                     </div>
 
 
+                    {/* PASSWORD */}
+
                     <div className="login-field">
 
                         <label>
                             Password
                         </label>
+
 
                         <input
                             type="password"
@@ -148,7 +196,9 @@ function Login() {
                     </div>
 
 
-                    <button
+                    {/* COMMON BUTTON */}
+
+                    <Button
                         type="submit"
                         className="login-button"
                         disabled={loading}
@@ -159,7 +209,8 @@ function Login() {
                             : "Login"
                         }
 
-                    </button>
+                    </Button>
+
 
                 </form>
 
@@ -168,7 +219,9 @@ function Login() {
         </main>
 
     );
+
 }
+
 
 export default Login;
 

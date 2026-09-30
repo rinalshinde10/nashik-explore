@@ -1,0 +1,106 @@
+
+/* ============================= */
+/* COMMON BUTTON */
+/* ============================= */
+
+.common-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+
+    padding: 10px 20px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background-color: #e67e22;
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    line-height: 1.2;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+    box-sizing: border-box;
+}
+
+
+/* ============================= */
+/* HOVER */
+/* ============================= */
+
+.common-button:hover {
+    background-color: #d35400;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+
+/* ============================= */
+/* ACTIVE */
+/* ============================= */
+
+.common-button:active {
+    transform: translateY(0);
+
+    box-shadow: none;
+}
+
+
+/* ============================= */
+/* DISABLED */
+/* ============================= */
+
+.common-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+/* ============================= */
+/* FULL WIDTH */
+/* ============================= */
+
+.common-button.full-width {
+    width: 100%;
+}
+
+
+/* ============================= */
+/* MOBILE */
+/* ============================= */
+
+@media (max-width: 600px) {
+
+    .common-button {
+        min-height: 42px;
+
+        padding: 9px 17px;
+
+        font-size: 14px;
+    }
+
+}
+
