@@ -24,6 +24,15 @@ function App() {
                         Find the best places to visit in Nashik.
                     </p>
                 </section>
+                <section>
+    <h2>Popular Places</h2>
+
+    <div>
+        <p>Trimbakeshwar Temple</p>
+        <p>Pandavleni Caves</p>
+        <p>Sula Vineyards</p>
+    </div>
+</section>
             </main>
 
         </div>
