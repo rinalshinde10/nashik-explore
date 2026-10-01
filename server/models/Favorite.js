@@ -19,6 +19,24 @@ const favoriteSchema = new mongoose.Schema(
     }
 );
 
-const Favorite = mongoose.model("Favorite", favoriteSchema);
+
+// Same user same place ko
+// multiple times favorite nahi kar sakta
+
+favoriteSchema.index(
+    {
+        user: 1,
+        place: 1
+    },
+    {
+        unique: true
+    }
+);
+
+
+const Favorite = mongoose.model(
+    "Favorite",
+    favoriteSchema
+);
 
 export default Favorite;

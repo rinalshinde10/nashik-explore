@@ -11,15 +11,10 @@ import authMiddleware from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 
-// Add Favorite - Logged-in User
-router.post(
-    "/",
-    authMiddleware,
-    addFavorite
-);
+// =====================================
+// GET MY FAVORITES
+// =====================================
 
-
-// Get My Favorites - Logged-in User
 router.get(
     "/",
     authMiddleware,
@@ -27,7 +22,21 @@ router.get(
 );
 
 
-// Remove Favorite - Logged-in User
+// =====================================
+// ADD FAVORITE
+// =====================================
+
+router.post(
+    "/",
+    authMiddleware,
+    addFavorite
+);
+
+
+// =====================================
+// REMOVE FAVORITE
+// =====================================
+
 router.delete(
     "/:placeId",
     authMiddleware,

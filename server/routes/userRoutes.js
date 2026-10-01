@@ -7,10 +7,14 @@ import {
 
 import authMiddleware from "../middleware/authMiddleware.js";
 
+
 const router = express.Router();
 
 
-// Get My Profile
+// =====================================
+// GET MY PROFILE
+// =====================================
+
 router.get(
     "/profile",
     authMiddleware,
@@ -18,7 +22,10 @@ router.get(
 );
 
 
-// Update My Profile
+// =====================================
+// UPDATE MY PROFILE
+// =====================================
+
 router.put(
     "/profile",
     authMiddleware,
