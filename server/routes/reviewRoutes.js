@@ -7,12 +7,18 @@ import {
     deleteReview
 } from "../controllers/reviewController.js";
 
-import authMiddleware from "../middleware/authMiddleware.js";
+import authMiddleware
+    from "../middleware/authMiddleware.js";
 
-const router = express.Router();
+
+const router =
+    express.Router();
 
 
-// Create Rating
+// =====================================
+// CREATE / UPDATE OWN REVIEW
+// =====================================
+
 router.post(
     "/",
     authMiddleware,
@@ -20,14 +26,20 @@ router.post(
 );
 
 
-// Get Ratings for a Place
+// =====================================
+// GET PLACE REVIEWS
+// =====================================
+
 router.get(
     "/place/:placeId",
     getPlaceReviews
 );
 
 
-// Update Own Rating
+// =====================================
+// UPDATE OWN REVIEW
+// =====================================
+
 router.put(
     "/:id",
     authMiddleware,
@@ -35,7 +47,10 @@ router.put(
 );
 
 
-// Delete Own Rating
+// =====================================
+// DELETE OWN REVIEW
+// =====================================
+
 router.delete(
     "/:id",
     authMiddleware,
@@ -43,4 +58,4 @@ router.delete(
 );
 
 
-export default router;
+export default router;  

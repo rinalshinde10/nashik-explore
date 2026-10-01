@@ -1,0 +1,237 @@
+/* ============================= */
+/* ADMIN PAGE */
+/* ============================= */
+
+.admin-page {
+    min-height: 100vh;
+
+    padding: 40px 50px 60px;
+
+    background-color: #f5f7fa;
+
+    box-sizing: border-box;
+}
+
+
+/* ============================= */
+/* HEADER */
+/* ============================= */
+
+.admin-header {
+    padding: 45px 30px;
+
+    margin-bottom: 30px;
+
+    background-color: #ffffff;
+
+    border-radius: 18px;
+
+    text-align: center;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+}
+
+
+.admin-header h1 {
+    margin: 0 0 10px;
+
+    color: #222222;
+
+    font-size: 32px;
+}
+
+
+.admin-header p {
+    margin: 0;
+
+    color: #777777;
+
+    font-size: 16px;
+}
+
+
+/* ============================= */
+/* CONTENT */
+/* ============================= */
+
+.admin-content {
+    padding: 35px;
+
+    background-color: #ffffff;
+
+    border-radius: 18px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+
+    box-sizing: border-box;
+}
+
+
+/* ============================= */
+/* WELCOME */
+/* ============================= */
+
+.admin-welcome {
+    margin-bottom: 30px;
+
+    text-align: center;
+}
+
+
+.admin-welcome h2 {
+    margin: 0 0 10px;
+
+    color: #222222;
+
+    font-size: 24px;
+}
+
+
+.admin-welcome p {
+    color: #666666;
+
+    font-size: 15px;
+}
+
+
+.admin-info {
+    margin: 20px auto 0;
+
+    max-width: 450px;
+
+    padding: 18px;
+
+    background-color: #f8f8f8;
+
+    border-radius: 10px;
+
+    text-align: left;
+}
+
+
+.admin-info p {
+    margin: 8px 0;
+}
+
+
+/* ============================= */
+/* ADMIN CARDS */
+/* ============================= */
+
+.admin-cards {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 25px;
+}
+
+
+.admin-card {
+    padding: 25px;
+
+    border: 1px solid #eeeeee;
+
+    border-radius: 14px;
+
+    background-color: #ffffff;
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.admin-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow: 0 7px 20px rgba(0, 0, 0, 0.09);
+}
+
+
+.admin-card h3 {
+    margin: 0 0 10px;
+
+    color: #e67e22;
+
+    font-size: 19px;
+}
+
+
+.admin-card p {
+    margin: 0;
+
+    color: #666666;
+
+    line-height: 1.6;
+
+    font-size: 14px;
+}
+
+
+/* ============================= */
+/* MESSAGE */
+/* ============================= */
+
+.admin-message {
+    min-height: 60vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+}
+
+
+.admin-message h2 {
+    margin-bottom: 15px;
+
+    color: #222222;
+}
+
+
+.admin-message p {
+    margin-bottom: 20px;
+
+    color: #666666;
+}
+
+
+/* ============================= */
+/* MOBILE */
+/* ============================= */
+
+@media (max-width: 700px) {
+
+    .admin-page {
+        padding: 25px 15px 40px;
+    }
+
+
+    .admin-header {
+        padding: 35px 20px;
+    }
+
+
+    .admin-header h1 {
+        font-size: 27px;
+    }
+
+
+    .admin-content {
+        padding: 20px;
+    }
+
+
+    .admin-cards {
+        grid-template-columns: 1fr;
+    }
+
+}

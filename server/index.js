@@ -3,52 +3,129 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import connectDB from "./config/db.js";
+
 import authRoutes from "./routes/authRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import placeRoutes from "./routes/placeRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+
 import errorMiddleware from "./middleware/errorMiddleware.js";
+
 
 dotenv.config();
 
 const app = express();
 
-// Middleware
+
+// =====================================
+// MIDDLEWARE
+// =====================================
+
 app.use(cors());
+
 app.use(express.json());
 
-// MongoDB Connection
+
+// =====================================
+// DATABASE CONNECTION
+// =====================================
+
 connectDB();
 
-// Authentication Routes
-app.use("/api/auth", authRoutes);
 
-// Category Routes
-app.use("/api/categories", categoryRoutes);
+// =====================================
+// API ROUTES
+// =====================================
 
-// Place Routes
-app.use("/api/places", placeRoutes);
+// Authentication
+app.use(
+    "/api/auth",
+    authRoutes
+);
 
-app.use("/api/reviews", reviewRoutes);
 
-app.use("/api/favorites", favoriteRoutes);
+// Categories
+app.use(
+    "/api/categories",
+    categoryRoutes
+);
 
-app.use("/api/users", userRoutes);
 
-app.use(errorMiddleware);
+// Places
+app.use(
+    "/api/places",
+    placeRoutes
+);
 
-// Home Route
+
+// Reviews
+app.use(
+    "/api/reviews",
+    reviewRoutes
+);
+
+
+// Favorites
+app.use(
+    "/api/favorites",
+    favoriteRoutes
+);
+
+
+// Users / Profile
+app.use(
+    "/api/users",
+    userRoutes
+);
+
+
+// Admin
+app.use(
+    "/api/admin",
+    adminRoutes
+);
+
+
+// =====================================
+// HOME ROUTE
+// =====================================
+
 app.get("/", (req, res) => {
-    res.json({
+
+    res.status(200).json({
+
+        success: true,
+
         message: "Nashik Explore API is running"
+
     });
+
 });
 
-// Server Port
-const PORT = process.env.PORT || 8080;
+
+// =====================================
+// ERROR HANDLER
+// =====================================
+
+// Keep this AFTER all routes
+app.use(errorMiddleware);
+
+
+// =====================================
+// SERVER
+// =====================================
+
+const PORT =
+    process.env.PORT || 8080;
+
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+
+    console.log(
+        `Server running on port ${PORT}`
+    );
+
 });

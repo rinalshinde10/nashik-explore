@@ -1,92 +1,107 @@
+import axios from "axios";
 
 const API_URL = "http://localhost:8080/api/reviews";
 
 
-// Create Review
-export const createReview = async (reviewData) => {
-    const token = localStorage.getItem("token");
+// =====================================
+// GET REVIEWS FOR PLACE
+// =====================================
 
-    const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(reviewData)
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.message || "Failed to create review");
-    }
-
-    return data;
-};
-
-
-// Get Reviews for a Place
 export const getPlaceReviews = async (placeId) => {
-    const response = await fetch(
+
+    const response = await axios.get(
         `${API_URL}/place/${placeId}`
     );
 
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch reviews");
-    }
-
-    return data;
+    return response.data;
 };
 
 
-// Update Review
-export const updateReview = async (reviewId, reviewData) => {
-    const token = localStorage.getItem("token");
+// =====================================
+// CREATE / UPDATE REVIEW
+// =====================================
 
-    const response = await fetch(
-        `${API_URL}/${reviewId}`,
+export const createReview = async ({
+    place,
+    rating,
+    comment
+}) => {
+
+    const token =
+        localStorage.getItem("token");
+
+
+    const response = await axios.post(
+        API_URL,
         {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(reviewData)
-        }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.message || "Failed to update review");
-    }
-
-    return data;
-};
-
-
-// Delete Review
-export const deleteReview = async (reviewId) => {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch(
-        `${API_URL}/${reviewId}`,
+            place,
+            rating,
+            comment
+        },
         {
-            method: "DELETE",
             headers: {
                 Authorization: `Bearer ${token}`
             }
         }
     );
 
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.message || "Failed to delete review");
-    }
-
-    return data;
+    return response.data;
 };
 
+
+// =====================================
+// UPDATE OWN REVIEW
+// =====================================
+
+export const updateReview = async (
+    reviewId,
+    {
+        rating,
+        comment
+    }
+) => {
+
+    const token =
+        localStorage.getItem("token");
+
+
+    const response = await axios.put(
+        `${API_URL}/${reviewId}`,
+        {
+            rating,
+            comment
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    return response.data;
+};
+
+
+// =====================================
+// DELETE OWN REVIEW
+// =====================================
+
+export const deleteReview = async (
+    reviewId
+) => {
+
+    const token =
+        localStorage.getItem("token");
+
+
+    const response = await axios.delete(
+        `${API_URL}/${reviewId}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    return response.data;
+};

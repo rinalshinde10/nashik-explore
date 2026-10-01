@@ -10,7 +10,9 @@ import { getPlaces } from "../../services/place_service";
 
 import {
     getPlaceReviews,
-    createReview
+    createReview,
+    updateReview,
+    deleteReview
 } from "../../services/review_service";
 
 
@@ -21,32 +23,96 @@ function PlaceDetails() {
     const navigate = useNavigate();
 
 
-    // =============================
-    // STATE
-    // =============================
+    // ==========================================
+    // PLACE STATE
+    // ==========================================
 
     const [place, setPlace] = useState(null);
 
-    const [reviews, setReviews] = useState([]);
-
     const [loading, setLoading] = useState(true);
-
-    const [reviewsLoading, setReviewsLoading] = useState(true);
-
-    const [selectedRating, setSelectedRating] = useState(0);
-
-    const [comment, setComment] = useState("");
-
-    const [submitting, setSubmitting] = useState(false);
 
     const [error, setError] = useState("");
 
-    const [reviewError, setReviewError] = useState("");
+
+    // ==========================================
+    // REVIEW STATE
+    // ==========================================
+
+    const [reviews, setReviews] = useState([]);
+
+    const [reviewsLoading, setReviewsLoading] =
+        useState(true);
+
+    const [reviewError, setReviewError] =
+        useState("");
 
 
-    // =============================
+    // ==========================================
+    // REVIEW FORM
+    // ==========================================
+
+    const [selectedRating, setSelectedRating] =
+        useState(0);
+
+    const [comment, setComment] =
+        useState("");
+
+    const [submitting, setSubmitting] =
+        useState(false);
+
+
+    // ==========================================
+    // EDIT REVIEW
+    // ==========================================
+
+    const [editingReviewId, setEditingReviewId] =
+        useState(null);
+
+    const [editRating, setEditRating] =
+        useState(0);
+
+    const [editComment, setEditComment] =
+        useState("");
+
+    const [editLoading, setEditLoading] =
+        useState(false);
+
+
+    // ==========================================
+    // DELETE REVIEW
+    // ==========================================
+
+    const [deletingReviewId, setDeletingReviewId] =
+        useState(null);
+
+
+    // ==========================================
+    // CURRENT USER
+    // ==========================================
+
+    const getCurrentUserId = () => {
+
+        try {
+
+            const user =
+                JSON.parse(
+                    localStorage.getItem("user")
+                );
+
+            return user?._id || user?.id || null;
+
+        } catch {
+
+            return null;
+
+        }
+
+    };
+
+
+    // ==========================================
     // FETCH PLACE
-    // =============================
+    // ==========================================
 
     const fetchPlace = async () => {
 
@@ -56,20 +122,30 @@ function PlaceDetails() {
 
             setError("");
 
-            const data = await getPlaces();
 
-            const foundPlace = data.places?.find(
-                (item) => item._id === id
-            );
+            const data =
+                await getPlaces();
+
+
+            const foundPlace =
+                data.places?.find(
+                    (item) =>
+                        item._id === id
+                );
+
 
             if (!foundPlace) {
 
-                setError("Place not found.");
+                setError(
+                    "Place not found."
+                );
 
                 setPlace(null);
 
                 return;
+
             }
+
 
             setPlace(foundPlace);
 
@@ -79,6 +155,7 @@ function PlaceDetails() {
                 "Error fetching place:",
                 error.message
             );
+
 
             setError(
                 "Unable to load place details."
@@ -93,9 +170,9 @@ function PlaceDetails() {
     };
 
 
-    // =============================
+    // ==========================================
     // FETCH REVIEWS
-    // =============================
+    // ==========================================
 
     const fetchReviews = async () => {
 
@@ -105,10 +182,15 @@ function PlaceDetails() {
 
             setReviewError("");
 
-            const data = await getPlaceReviews(id);
+
+            const data =
+                await getPlaceReviews(id);
+
 
             setReviews(
-                data.reviews || []
+                Array.isArray(data.reviews)
+                    ? data.reviews
+                    : []
             );
 
         } catch (error) {
@@ -118,7 +200,9 @@ function PlaceDetails() {
                 error.message
             );
 
+
             setReviewError(
+                error.response?.data?.message ||
                 "Unable to load reviews."
             );
 
@@ -131,9 +215,9 @@ function PlaceDetails() {
     };
 
 
-    // =============================
+    // ==========================================
     // INITIAL LOAD
-    // =============================
+    // ==========================================
 
     useEffect(() => {
 
@@ -146,9 +230,9 @@ function PlaceDetails() {
     }, [id]);
 
 
-    // =============================
-    // RATING
-    // =============================
+    // ==========================================
+    // NEW REVIEW RATING
+    // ==========================================
 
     const handleRating = (rating) => {
 
@@ -157,22 +241,24 @@ function PlaceDetails() {
     };
 
 
-    // =============================
-    // SUBMIT REVIEW
-    // =============================
+    // ==========================================
+    // SUBMIT NEW REVIEW
+    // ==========================================
 
-    const handleSubmitReview = async (event) => {
+    const handleSubmitReview = async (
+        event
+    ) => {
 
         event.preventDefault();
 
         setReviewError("");
 
 
-        // Check login
-
         const token =
             localStorage.getItem("token");
 
+
+        // Login required
 
         if (!token) {
 
@@ -187,7 +273,7 @@ function PlaceDetails() {
         }
 
 
-        // Check rating
+        // Rating required
 
         if (!selectedRating) {
 
@@ -200,12 +286,23 @@ function PlaceDetails() {
         }
 
 
-        // Check comment
+        // Comment required
 
         if (!comment.trim()) {
 
             setReviewError(
                 "Please enter your review."
+            );
+
+            return;
+
+        }
+
+
+        if (comment.trim().length > 500) {
+
+            setReviewError(
+                "Review cannot exceed 500 characters."
             );
 
             return;
@@ -250,7 +347,6 @@ function PlaceDetails() {
                 "Review added successfully."
             );
 
-
         } catch (error) {
 
             console.error(
@@ -260,6 +356,7 @@ function PlaceDetails() {
 
 
             setReviewError(
+                error.response?.data?.message ||
                 error.message ||
                 "Failed to add review."
             );
@@ -273,9 +370,247 @@ function PlaceDetails() {
     };
 
 
-    // =============================
+    // ==========================================
+    // START EDIT REVIEW
+    // ==========================================
+
+    const handleEditReview = (review) => {
+
+        setEditingReviewId(
+            review._id
+        );
+
+        setEditRating(
+            review.rating
+        );
+
+        setEditComment(
+            review.comment || ""
+        );
+
+        setReviewError("");
+
+    };
+
+
+    // ==========================================
+    // CANCEL EDIT
+    // ==========================================
+
+    const handleCancelEdit = () => {
+
+        setEditingReviewId(null);
+
+        setEditRating(0);
+
+        setEditComment("");
+
+    };
+
+
+    // ==========================================
+    // UPDATE REVIEW
+    // ==========================================
+
+    const handleUpdateReview = async (
+        reviewId
+    ) => {
+
+        setReviewError("");
+
+
+        const token =
+            localStorage.getItem("token");
+
+
+        if (!token) {
+
+            navigate("/login");
+
+            return;
+
+        }
+
+
+        if (!editRating) {
+
+            setReviewError(
+                "Please select a rating."
+            );
+
+            return;
+
+        }
+
+
+        if (!editComment.trim()) {
+
+            setReviewError(
+                "Please enter your review."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            editComment.trim().length > 500
+        ) {
+
+            setReviewError(
+                "Review cannot exceed 500 characters."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            setEditLoading(true);
+
+
+            await updateReview(
+
+                reviewId,
+
+                {
+                    rating: editRating,
+                    comment:
+                        editComment.trim()
+                }
+
+            );
+
+
+            setEditingReviewId(null);
+
+            setEditRating(0);
+
+            setEditComment("");
+
+
+            await fetchReviews();
+
+            await fetchPlace();
+
+
+            alert(
+                "Review updated successfully."
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Error updating review:",
+                error.message
+            );
+
+
+            setReviewError(
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to update review."
+            );
+
+        } finally {
+
+            setEditLoading(false);
+
+        }
+
+    };
+
+
+    // ==========================================
+    // DELETE REVIEW
+    // ==========================================
+
+    const handleDeleteReview = async (
+        reviewId
+    ) => {
+
+        const token =
+            localStorage.getItem("token");
+
+
+        if (!token) {
+
+            navigate("/login");
+
+            return;
+
+        }
+
+
+        const confirmed =
+            window.confirm(
+                "Are you sure you want to delete this review?"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        try {
+
+            setDeletingReviewId(
+                reviewId
+            );
+
+
+            await deleteReview(
+                reviewId
+            );
+
+
+            if (
+                editingReviewId ===
+                reviewId
+            ) {
+
+                handleCancelEdit();
+
+            }
+
+
+            await fetchReviews();
+
+            await fetchPlace();
+
+
+        } catch (error) {
+
+            console.error(
+                "Error deleting review:",
+                error.message
+            );
+
+
+            setReviewError(
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to delete review."
+            );
+
+        } finally {
+
+            setDeletingReviewId(null);
+
+        }
+
+    };
+
+
+    // ==========================================
     // GOOGLE MAP
-    // =============================
+    // ==========================================
 
     const openLocation = () => {
 
@@ -305,9 +640,9 @@ function PlaceDetails() {
     };
 
 
-    // =============================
+    // ==========================================
     // BACK TO PLACES
-    // =============================
+    // ==========================================
 
     const handleBack = () => {
 
@@ -316,9 +651,9 @@ function PlaceDetails() {
     };
 
 
-    // =============================
+    // ==========================================
     // LOADING
-    // =============================
+    // ==========================================
 
     if (loading) {
 
@@ -341,9 +676,9 @@ function PlaceDetails() {
     }
 
 
-    // =============================
-    // ERROR / PLACE NOT FOUND
-    // =============================
+    // ==========================================
+    // ERROR
+    // ==========================================
 
     if (error || !place) {
 
@@ -354,7 +689,8 @@ function PlaceDetails() {
                 <div className="details-message">
 
                     <h2>
-                        {error || "Place not found"}
+                        {error ||
+                            "Place not found"}
                     </h2>
 
 
@@ -374,18 +710,22 @@ function PlaceDetails() {
     }
 
 
-    // =============================
+    const currentUserId =
+        getCurrentUserId();
+
+
+    // ==========================================
     // JSX
-    // =============================
+    // ==========================================
 
     return (
 
         <main className="place-details-page">
 
 
-            {/* ============================= */}
-            {/* BACK BUTTON */}
-            {/* ============================= */}
+            {/* ==================================
+                BACK BUTTON
+            ================================== */}
 
             <Button
                 className="back-button"
@@ -395,63 +735,59 @@ function PlaceDetails() {
             </Button>
 
 
-            {/* ============================= */}
-            {/* PLACE DETAILS */}
-            {/* ============================= */}
+            {/* ==================================
+                PLACE DETAILS
+            ================================== */}
 
             <section className="place-details-card">
 
                 <div className="place-details-content">
 
 
-                    {/* PLACE NAME */}
-
                     <h1>
                         {place.name}
                     </h1>
 
 
-                    {/* CATEGORY */}
-
                     {place.category?.name && (
 
                         <p className="details-category">
+
                             {place.category.name}
+
                         </p>
 
                     )}
 
 
-                    {/* DESCRIPTION */}
-
                     <p className="details-description">
+
                         {place.description}
+
                     </p>
 
-
-                    {/* LOCATION */}
 
                     {place.location && (
 
                         <p className="details-location">
+
                             📍 {place.location}
+
                         </p>
 
                     )}
 
-
-                    {/* ADDRESS */}
 
                     {place.address && (
 
                         <p className="details-address">
+
                             🏠 {place.address}
+
                         </p>
 
                     )}
 
-
-                    {/* TIMING */}
 
                     {(place.openingTime ||
                         place.closingTime) && (
@@ -460,18 +796,18 @@ function PlaceDetails() {
 
                             🕒{" "}
 
-                            {place.openingTime || "--"}
+                            {place.openingTime ||
+                                "--"}
 
                             {" - "}
 
-                            {place.closingTime || "--"}
+                            {place.closingTime ||
+                                "--"}
 
                         </p>
 
                     )}
 
-
-                    {/* RATING */}
 
                     <div className="details-rating">
 
@@ -489,7 +825,8 @@ function PlaceDetails() {
                         <span className="review-count">
 
                             (
-                            {place.totalReviews || 0}
+                            {place.totalReviews ||
+                                0}
                             {" "}
                             {place.totalReviews === 1
                                 ? "review"
@@ -500,8 +837,6 @@ function PlaceDetails() {
 
                     </div>
 
-
-                    {/* GOOGLE MAP */}
 
                     <Button
                         className="details-map-button"
@@ -515,9 +850,9 @@ function PlaceDetails() {
             </section>
 
 
-            {/* ============================= */}
-            {/* ADD REVIEW */}
-            {/* ============================= */}
+            {/* ==================================
+                ADD REVIEW
+            ================================== */}
 
             <section className="review-section">
 
@@ -526,18 +861,16 @@ function PlaceDetails() {
                 </h2>
 
 
-                {/* REVIEW ERROR */}
-
                 {reviewError && (
 
                     <p className="login-error">
+
                         {reviewError}
+
                     </p>
 
                 )}
 
-
-                {/* STAR RATING */}
 
                 <div className="review-stars">
 
@@ -548,16 +881,26 @@ function PlaceDetails() {
                                 key={star}
                                 type="button"
                                 className={
-                                    star <= selectedRating
+                                    star <=
+                                    selectedRating
                                         ? "review-star active"
                                         : "review-star"
                                 }
                                 onClick={() =>
-                                    handleRating(star)
+                                    handleRating(
+                                        star
+                                    )
                                 }
-                                aria-label={`Rate ${star} stars`}
+                                disabled={
+                                    submitting
+                                }
+                                aria-label={
+                                    `Rate ${star} stars`
+                                }
                             >
+
                                 ★
+
                             </button>
 
                         )
@@ -566,11 +909,11 @@ function PlaceDetails() {
                 </div>
 
 
-                {/* REVIEW FORM */}
-
                 <form
                     className="review-form"
-                    onSubmit={handleSubmitReview}
+                    onSubmit={
+                        handleSubmitReview
+                    }
                 >
 
                     <textarea
@@ -583,15 +926,18 @@ function PlaceDetails() {
                         placeholder="Write your review..."
                         rows="4"
                         maxLength="500"
+                        disabled={
+                            submitting
+                        }
                     />
 
 
                     <p className="review-character-count">
+
                         {comment.length}/500
+
                     </p>
 
-
-                    {/* COMMON BUTTON */}
 
                     <Button
                         type="submit"
@@ -609,9 +955,9 @@ function PlaceDetails() {
             </section>
 
 
-            {/* ============================= */}
-            {/* REVIEWS */}
-            {/* ============================= */}
+            {/* ==================================
+                REVIEWS
+            ================================== */}
 
             <section className="reviews-section">
 
@@ -620,31 +966,31 @@ function PlaceDetails() {
                 </h2>
 
 
-                {/* REVIEWS LOADING */}
-
                 {reviewsLoading && (
 
                     <p className="no-reviews">
+
                         Loading reviews...
+
                     </p>
 
                 )}
 
 
-                {/* REVIEW ERROR */}
-
                 {!reviewsLoading &&
-                    reviewError &&
-                    reviews.length === 0 && (
+                    reviews.length === 0 &&
+                    !reviewError && (
 
                         <p className="no-reviews">
-                            Unable to load reviews.
+
+                            No reviews yet.
+                            Be the first to review
+                            this place.
+
                         </p>
 
                     )}
 
-
-                {/* REVIEWS LIST */}
 
                 {!reviewsLoading &&
                     reviews.length > 0 && (
@@ -652,57 +998,239 @@ function PlaceDetails() {
                         <div className="reviews-list">
 
                             {reviews.map(
-                                (review) => (
+                                (review) => {
 
-                                    <div
-                                        className="review-card"
-                                        key={review._id}
-                                    >
-
-                                        <div className="review-card-top">
-
-                                            <strong>
-                                                {
-                                                    review.user?.name ||
-                                                    "User"
-                                                }
-                                            </strong>
+                                    const reviewUserId =
+                                        review.user?._id ||
+                                        review.user?.id;
 
 
-                                            <div className="review-card-stars">
+                                    const isOwnReview =
+                                        currentUserId &&
+                                        reviewUserId &&
+                                        currentUserId ===
+                                        reviewUserId;
 
-                                                {"★".repeat(
-                                                    review.rating
+
+                                    const isEditing =
+                                        editingReviewId ===
+                                        review._id;
+
+
+                                    const isDeleting =
+                                        deletingReviewId ===
+                                        review._id;
+
+
+                                    return (
+
+                                        <div
+                                            className="review-card"
+                                            key={
+                                                review._id
+                                            }
+                                        >
+
+
+                                            {/* USER + RATING */}
+
+                                            <div className="review-card-top">
+
+                                                <strong>
+
+                                                    {
+                                                        review.user?.name ||
+                                                        "User"
+                                                    }
+
+                                                </strong>
+
+
+                                                {!isEditing && (
+
+                                                    <div className="review-card-stars">
+
+                                                        {"★".repeat(
+                                                            review.rating
+                                                        )}
+
+                                                    </div>
+
                                                 )}
 
                                             </div>
 
+
+                                            {/* EDIT MODE */}
+
+                                            {isEditing ? (
+
+                                                <div className="review-edit-form">
+
+
+                                                    <div className="edit-rating">
+
+                                                        {[1, 2, 3, 4, 5].map(
+                                                            (star) => (
+
+                                                                <button
+                                                                    key={
+                                                                        star
+                                                                    }
+                                                                    type="button"
+                                                                    className={
+                                                                        star <=
+                                                                        editRating
+                                                                            ? "review-star active"
+                                                                            : "review-star"
+                                                                    }
+                                                                    onClick={() =>
+                                                                        setEditRating(
+                                                                            star
+                                                                        )
+                                                                    }
+                                                                >
+
+                                                                    ★
+
+                                                                </button>
+
+                                                            )
+                                                        )}
+
+                                                    </div>
+
+
+                                                    <textarea
+                                                        value={
+                                                            editComment
+                                                        }
+                                                        onChange={(
+                                                            event
+                                                        ) =>
+                                                            setEditComment(
+                                                                event.target.value
+                                                            )
+                                                        }
+                                                        rows="4"
+                                                        maxLength="500"
+                                                    />
+
+
+                                                    <p className="review-character-count">
+
+                                                        {
+                                                            editComment.length
+                                                        }
+                                                        /500
+
+                                                    </p>
+
+
+                                                    <div className="review-edit-actions">
+
+                                                        <Button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                handleUpdateReview(
+                                                                    review._id
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                editLoading
+                                                            }
+                                                        >
+
+                                                            {editLoading
+                                                                ? "Saving..."
+                                                                : "Save Changes"}
+
+                                                        </Button>
+
+
+                                                        <Button
+                                                            type="button"
+                                                            onClick={
+                                                                handleCancelEdit
+                                                            }
+                                                            disabled={
+                                                                editLoading
+                                                            }
+                                                        >
+
+                                                            Cancel
+
+                                                        </Button>
+
+                                                    </div>
+
+                                                </div>
+
+                                            ) : (
+
+                                                <p>
+
+                                                    {
+                                                        review.comment ||
+                                                        "No comment provided."
+                                                    }
+
+                                                </p>
+
+                                            )}
+
+
+                                            {/* OWN REVIEW ACTIONS */}
+
+                                            {isOwnReview &&
+                                                !isEditing && (
+
+                                                    <div className="review-actions">
+
+                                                        <Button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                handleEditReview(
+                                                                    review
+                                                                )
+                                                            }
+                                                        >
+
+                                                            Edit
+
+                                                        </Button>
+
+
+                                                        <Button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                handleDeleteReview(
+                                                                    review._id
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                isDeleting
+                                                            }
+                                                        >
+
+                                                            {isDeleting
+                                                                ? "Deleting..."
+                                                                : "Delete"}
+
+                                                        </Button>
+
+                                                    </div>
+
+                                                )}
+
                                         </div>
 
+                                    );
 
-                                        <p>
-                                            {review.comment}
-                                        </p>
-
-                                    </div>
-
-                                )
+                                }
                             )}
 
                         </div>
-
-                    )}
-
-
-                {/* NO REVIEWS */}
-
-                {!reviewsLoading &&
-                    !reviewError &&
-                    reviews.length === 0 && (
-
-                        <p className="no-reviews">
-                            No reviews yet. Be the first to review this place.
-                        </p>
 
                     )}
 
@@ -716,4 +1244,6 @@ function PlaceDetails() {
 
 
 export default PlaceDetails;
+
+
 

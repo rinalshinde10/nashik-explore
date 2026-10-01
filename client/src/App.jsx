@@ -5,8 +5,13 @@ import Navbar from "./components/Navbar/Navbar";
 import Home from "./views/Home/Home";
 import Places from "./views/Places/Places";
 import PlaceDetails from "./views/PlaceDetails/PlaceDetails";
+
 import Login from "./views/Login/Login";
 import Register from "./views/Register/Register";
+
+import Profile from "./views/Profile/Profile";
+
+import Admin from "./views/Admin/Admin";
 
 
 function App() {
@@ -15,11 +20,19 @@ function App() {
 
         <BrowserRouter>
 
+            {/* ============================= */}
+            {/* COMMON NAVBAR */}
+            {/* ============================= */}
+
             <Navbar />
+
 
             <Routes>
 
-                {/* Home */}
+
+                {/* ============================= */}
+                {/* HOME */}
+                {/* ============================= */}
 
                 <Route
                     path="/"
@@ -27,12 +40,15 @@ function App() {
                 />
 
 
-                {/* Authentication */}
+                {/* ============================= */}
+                {/* AUTHENTICATION */}
+                {/* ============================= */}
 
                 <Route
                     path="/login"
                     element={<Login />}
                 />
+
 
                 <Route
                     path="/register"
@@ -40,7 +56,9 @@ function App() {
                 />
 
 
-                {/* Places */}
+                {/* ============================= */}
+                {/* PLACES */}
+                {/* ============================= */}
 
                 <Route
                     path="/places"
@@ -48,12 +66,28 @@ function App() {
                 />
 
 
-                {/* Place Details */}
+                {/* ============================= */}
+                {/* PLACE DETAILS */}
+                {/* ============================= */}
 
                 <Route
                     path="/places/:id"
                     element={<PlaceDetails />}
                 />
+
+
+                {/* ============================= */}
+                {/* USER PROFILE */}
+                {/* ============================= */}
+
+                <Route
+                    path="/profile"
+                    element={<Profile />}
+                />
+<Route
+    path="/admin"
+    element={<Admin />}
+/>
 
             </Routes>
 
