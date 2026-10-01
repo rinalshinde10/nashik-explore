@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar/Navbar";
@@ -16,10 +15,7 @@ function App() {
 
         <BrowserRouter>
 
-            {/* Common Navbar */}
-
             <Navbar />
-
 
             <Routes>
 
@@ -31,15 +27,12 @@ function App() {
                 />
 
 
-                {/* Login */}
+                {/* Authentication */}
 
                 <Route
                     path="/login"
                     element={<Login />}
                 />
-
-
-                {/* Register */}
 
                 <Route
                     path="/register"
@@ -72,4 +65,3 @@ function App() {
 
 
 export default App;
-

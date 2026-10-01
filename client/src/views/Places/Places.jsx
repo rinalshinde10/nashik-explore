@@ -1,5 +1,12 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+
+import {
+    addFavorite,
+    getFavorites,
+    removeFavorite
+} from "../../services/favorite_service";
 
 import Button from "../../components/Button/Button";
 
@@ -17,7 +24,8 @@ function Places() {
 
     const navigate = useNavigate();
 
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams, setSearchParams] =
+        useSearchParams();
 
 
     // ==========================================
@@ -28,6 +36,9 @@ function Places() {
 
     const [categories, setCategories] = useState([]);
 
+    const [favoritePlaces, setFavoritePlaces] =
+        useState([]);
+
     const [search, setSearch] = useState(
         searchParams.get("search") || ""
     );
@@ -36,17 +47,23 @@ function Places() {
         searchParams.get("category") || ""
     );
 
-    const [userRatings, setUserRatings] = useState({});
+    const [userRatings, setUserRatings] =
+        useState({});
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] =
+        useState(true);
 
     const [categoriesLoading, setCategoriesLoading] =
         useState(true);
 
-    const [error, setError] = useState("");
+    const [error, setError] =
+        useState("");
 
     const [categoriesError, setCategoriesError] =
         useState("");
+
+    const [favoriteLoading, setFavoriteLoading] =
+        useState({});
 
 
     // ==========================================
@@ -57,11 +74,13 @@ function Places() {
 
         fetchCategories();
 
+        fetchFavoritePlaces();
+
     }, []);
 
 
     // ==========================================
-    // FETCH PLACES WHEN FILTER CHANGES
+    // FETCH PLACES WHEN CATEGORY CHANGES
     // ==========================================
 
     useEffect(() => {
@@ -72,6 +91,49 @@ function Places() {
         );
 
     }, [category]);
+
+
+    // ==========================================
+    // AUTH CHANGE
+    // ==========================================
+
+    useEffect(() => {
+
+        const handleAuthChange = () => {
+
+            fetchFavoritePlaces();
+
+        };
+
+
+        window.addEventListener(
+            "authChanged",
+            handleAuthChange
+        );
+
+
+        window.addEventListener(
+            "storage",
+            handleAuthChange
+        );
+
+
+        return () => {
+
+            window.removeEventListener(
+                "authChanged",
+                handleAuthChange
+            );
+
+
+            window.removeEventListener(
+                "storage",
+                handleAuthChange
+            );
+
+        };
+
+    }, []);
 
 
     // ==========================================
@@ -89,9 +151,10 @@ function Places() {
 
             setError("");
 
+
             const data = await getPlaces({
 
-                search: searchValue,
+                search: searchValue.trim(),
 
                 category: categoryValue
 
@@ -110,6 +173,7 @@ function Places() {
                     : []
             );
 
+
         } catch (error) {
 
             console.error(
@@ -117,9 +181,11 @@ function Places() {
                 error.message
             );
 
+
             setError(
                 "Unable to load places. Please try again."
             );
+
 
         } finally {
 
@@ -159,6 +225,7 @@ function Places() {
                     : []
             );
 
+
         } catch (error) {
 
             console.error(
@@ -166,13 +233,218 @@ function Places() {
                 error.message
             );
 
+
             setCategoriesError(
                 "Unable to load categories."
             );
 
+
         } finally {
 
             setCategoriesLoading(false);
+
+        }
+
+    };
+
+
+    // ==========================================
+    // FETCH FAVORITES
+    // ==========================================
+
+    const fetchFavoritePlaces = async () => {
+
+        const token =
+            localStorage.getItem("token");
+
+
+        if (!token) {
+
+            setFavoritePlaces([]);
+
+            return;
+
+        }
+
+
+        try {
+
+            const data =
+                await getFavorites();
+
+
+            const favoriteIds =
+                Array.isArray(data.favorites)
+                    ? data.favorites
+                        .map(
+                            (favorite) =>
+                                favorite.place?._id
+                        )
+                        .filter(Boolean)
+                    : [];
+
+
+            // Remove duplicate IDs
+            setFavoritePlaces(
+                [...new Set(favoriteIds)]
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Error fetching favorites:",
+                error.message
+            );
+
+
+            setFavoritePlaces([]);
+
+        }
+
+    };
+
+
+    // ==========================================
+    // FAVORITE
+    // ==========================================
+
+    const handleFavorite = async (
+        placeId
+    ) => {
+
+        const token =
+            localStorage.getItem("token");
+
+
+        // Login required
+        if (!token) {
+
+            alert(
+                "Please login to add favorites."
+            );
+
+            navigate("/login");
+
+            return;
+
+        }
+
+
+        // Prevent double click
+        if (favoriteLoading[placeId]) {
+
+            return;
+
+        }
+
+
+        try {
+
+            setFavoriteLoading(
+                (previous) => ({
+
+                    ...previous,
+
+                    [placeId]: true
+
+                })
+            );
+
+
+            // ==================================
+            // REMOVE FAVORITE
+            // ==================================
+
+            if (
+                favoritePlaces.includes(placeId)
+            ) {
+
+                await removeFavorite(
+                    placeId
+                );
+
+
+                setFavoritePlaces(
+                    (previousFavorites) =>
+                        previousFavorites.filter(
+                            (id) =>
+                                id !== placeId
+                        )
+                );
+
+
+                return;
+
+            }
+
+
+            // ==================================
+            // ADD FAVORITE
+            // ==================================
+
+            await addFavorite(
+                placeId
+            );
+
+
+            setFavoritePlaces(
+                (previousFavorites) => {
+
+                    if (
+                        previousFavorites.includes(
+                            placeId
+                        )
+                    ) {
+
+                        return previousFavorites;
+
+                    }
+
+
+                    return [
+
+                        ...previousFavorites,
+
+                        placeId
+
+                    ];
+
+                }
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Favorite error:",
+                error.message
+            );
+
+
+            alert(
+                error.message ||
+                "Unable to update favorite."
+            );
+
+
+        } finally {
+
+            setFavoriteLoading(
+                (previous) => {
+
+                    const updated = {
+                        ...previous
+                    };
+
+
+                    delete updated[placeId];
+
+
+                    return updated;
+
+                }
+            );
 
         }
 
@@ -235,7 +507,9 @@ function Places() {
     // CATEGORY FILTER
     // ==========================================
 
-    const handleCategoryChange = (event) => {
+    const handleCategoryChange = (
+        event
+    ) => {
 
         const value =
             event.target.value;
@@ -293,7 +567,6 @@ function Places() {
 
         setCategory("");
 
-
         setSearchParams({});
 
 
@@ -313,6 +586,23 @@ function Places() {
         placeId,
         rating
     ) => {
+
+        const token =
+            localStorage.getItem("token");
+
+
+        if (!token) {
+
+            alert(
+                "Please login to submit a rating."
+            );
+
+            navigate("/login");
+
+            return;
+
+        }
+
 
         try {
 
@@ -351,6 +641,7 @@ function Places() {
                 category
             );
 
+
         } catch (error) {
 
             console.error(
@@ -360,8 +651,9 @@ function Places() {
 
 
             alert(
+                error.response?.data?.message ||
                 error.message ||
-                "Please login to submit a rating."
+                "Unable to submit rating."
             );
 
         }
@@ -462,9 +754,11 @@ function Places() {
                         >
 
                             <option value="">
+
                                 {categoriesLoading
                                     ? "Loading categories..."
                                     : "All Categories"}
+
                             </option>
 
 
@@ -546,9 +840,7 @@ function Places() {
                 <div className="places-grid">
 
 
-                    {/* ==================================
-                        LOADING
-                    ================================== */}
+                    {/* LOADING */}
 
                     {loading && (
 
@@ -559,9 +851,7 @@ function Places() {
                     )}
 
 
-                    {/* ==================================
-                        ERROR
-                    ================================== */}
+                    {/* ERROR */}
 
                     {!loading && error && (
 
@@ -586,9 +876,7 @@ function Places() {
                     )}
 
 
-                    {/* ==================================
-                        PLACES
-                    ================================== */}
+                    {/* PLACES */}
 
                     {!loading &&
                         !error &&
@@ -607,6 +895,18 @@ function Places() {
                                     );
 
 
+                                const isFavorite =
+                                    favoritePlaces.includes(
+                                        place._id
+                                    );
+
+
+                                const isFavoriteLoading =
+                                    !!favoriteLoading[
+                                        place._id
+                                    ];
+
+
                                 return (
 
                                     <div
@@ -619,11 +919,51 @@ function Places() {
                                         <div className="place-card-content">
 
 
-                                            {/* NAME */}
+                                            {/* ==================================
+                                                NAME + FAVORITE
+                                            ================================== */}
 
-                                            <h2>
-                                                {place.name}
-                                            </h2>
+                                            <div className="place-title-row">
+
+                                                <h2>
+                                                    {place.name}
+                                                </h2>
+
+
+                                                <button
+                                                    type="button"
+                                                    className={
+                                                        isFavorite
+                                                            ? "favorite-button active"
+                                                            : "favorite-button"
+                                                    }
+                                                    onClick={() =>
+                                                        handleFavorite(
+                                                            place._id
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        isFavoriteLoading
+                                                    }
+                                                    aria-label={
+                                                        isFavorite
+                                                            ? "Remove from favorites"
+                                                            : "Add to favorites"
+                                                    }
+                                                    title={
+                                                        isFavorite
+                                                            ? "Remove from favorites"
+                                                            : "Add to favorites"
+                                                    }
+                                                >
+
+                                                    {isFavorite
+                                                        ? "♥"
+                                                        : "♡"}
+
+                                                </button>
+
+                                            </div>
 
 
                                             {/* CATEGORY */}
@@ -688,8 +1028,10 @@ function Places() {
                                                     {" "}
 
                                                     (
-                                                    {place.totalReviews ||
-                                                        0}
+                                                    {
+                                                        place.totalReviews ||
+                                                        0
+                                                    }
                                                     )
 
                                                 </span>
@@ -702,7 +1044,8 @@ function Places() {
                                             <p className="place-description">
 
                                                 {
-                                                    place.description
+                                                    place.description ||
+                                                    "No description available."
                                                 }
 
                                             </p>
@@ -710,15 +1053,19 @@ function Places() {
 
                                             {/* LOCATION */}
 
-                                            <p className="place-location">
+                                            {place.location && (
 
-                                                📍{" "}
+                                                <p className="place-location">
 
-                                                {
-                                                    place.location
-                                                }
+                                                    📍{" "}
 
-                                            </p>
+                                                    {
+                                                        place.location
+                                                    }
+
+                                                </p>
+
+                                            )}
 
 
                                             {/* ADDRESS */}
@@ -790,9 +1137,7 @@ function Places() {
                     }
 
 
-                    {/* ==================================
-                        NO PLACES
-                    ================================== */}
+                    {/* NO PLACES */}
 
                     {!loading &&
                         !error &&
@@ -835,3 +1180,4 @@ function Places() {
 
 
 export default Places;
+
