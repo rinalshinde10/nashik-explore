@@ -1,21 +1,59 @@
-function Cards({ title, description, icon, buttonText }) {
+
+import Button from "../Button/Button";
+
+
+function Cards({
+    title,
+    description,
+    icon,
+    buttonText,
+    onClick
+}) {
+
     return (
+
         <div className="category-card">
 
+
+            {/* CATEGORY ICON */}
+
             <div className="category-icon">
+
                 {icon}
+
             </div>
 
-            <h3>{title}</h3>
 
-            <p>{description}</p>
+            {/* CATEGORY TITLE */}
 
-            <button className="category-button">
+            <h3>
+                {title}
+            </h3>
+
+
+            {/* CATEGORY DESCRIPTION */}
+
+            <p>
+                {description}
+            </p>
+
+
+            {/* CATEGORY BUTTON */}
+
+            <Button
+                className="category-button"
+                onClick={onClick}
+            >
                 {buttonText}
-            </button>
+            </Button>
+
 
         </div>
+
     );
+
 }
 
+
 export default Cards;
+

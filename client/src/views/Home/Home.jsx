@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -19,7 +18,6 @@ function Home() {
 
     const navigate = useNavigate();
 
-
     const [categories, setCategories] = useState([]);
 
     const [loading, setLoading] = useState(true);
@@ -27,62 +25,81 @@ function Home() {
     const [error, setError] = useState("");
 
 
-    // =============================
+    // ==========================================
     // FETCH CATEGORIES
-    // =============================
+    // ==========================================
+
+    const fetchCategories = async () => {
+
+        try {
+
+            setLoading(true);
+
+            setError("");
+
+            const data = await getCategories();
+
+            console.log("Home Categories:", data);
+
+            setCategories(
+                Array.isArray(data.categories)
+                    ? data.categories
+                    : []
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Error fetching categories:",
+                error.message
+            );
+
+            setError(
+                "Unable to load categories. Please try again."
+            );
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    };
+
+
+    // ==========================================
+    // INITIAL LOAD
+    // ==========================================
 
     useEffect(() => {
-
-        const fetchCategories = async () => {
-
-            try {
-
-                setLoading(true);
-
-                setError("");
-
-                const data = await getCategories();
-
-                console.log("Home Categories:", data);
-
-                setCategories(
-                    data.categories || []
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Error fetching categories:",
-                    error.message
-                );
-
-                setError(
-                    "Unable to load categories."
-                );
-
-            } finally {
-
-                setLoading(false);
-
-            }
-
-        };
-
 
         fetchCategories();
 
     }, []);
 
 
-    // =============================
+    // ==========================================
     // CATEGORY CLICK
-    // =============================
+    // ==========================================
 
     const handleCategoryClick = (categoryId) => {
 
-        navigate(
-            `/places?category=${categoryId}`
-        );
+        if (!categoryId) {
+            return;
+        }
+
+        navigate(`/places?category=${categoryId}`);
+
+    };
+
+
+    // ==========================================
+    // EXPLORE ALL PLACES
+    // ==========================================
+
+    const handleExplorePlaces = () => {
+
+        navigate("/places");
 
     };
 
@@ -92,9 +109,9 @@ function Home() {
         <main className="home">
 
 
-            {/* ============================= */}
-            {/* HERO SECTION */}
-            {/* ============================= */}
+            {/* ==========================================
+                HERO SECTION
+            ========================================== */}
 
             <section className="hero-section">
 
@@ -106,30 +123,21 @@ function Home() {
 
 
                     <h1>
-
                         Discover the Beauty of
-
-                        <span>
-                            {" "}Nashik
-                        </span>
-
+                        <span> Nashik</span>
                     </h1>
 
 
                     <p className="hero-description">
-
                         Explore temples, historical places,
-                        waterfalls, vineyards, forts and
-                        other beautiful destinations across Nashik.
-
+                        waterfalls, vineyards, forts and other
+                        beautiful destinations across Nashik.
                     </p>
 
 
                     <Button
                         className="explore-button"
-                        onClick={() =>
-                            navigate("/places")
-                        }
+                        onClick={handleExplorePlaces}
                     >
                         Explore Places
                     </Button>
@@ -139,9 +147,9 @@ function Home() {
             </section>
 
 
-            {/* ============================= */}
-            {/* WELCOME SECTION */}
-            {/* ============================= */}
+            {/* ==========================================
+                WELCOME SECTION
+            ========================================== */}
 
             <section className="welcome-section">
 
@@ -158,9 +166,9 @@ function Home() {
             </section>
 
 
-            {/* ============================= */}
-            {/* CATEGORIES SECTION */}
-            {/* ============================= */}
+            {/* ==========================================
+                CATEGORIES SECTION
+            ========================================== */}
 
             <section className="categories-section">
 
@@ -178,73 +186,103 @@ function Home() {
                 <div className="categories-container">
 
 
-                    {/* LOADING */}
+                    {/* ==================================
+                        LOADING
+                    ================================== */}
 
                     {loading && (
 
-                        <p className="categories-message">
-                            Loading categories...
-                        </p>
+                        <div className="categories-message">
+
+                            <p>
+                                Loading categories...
+                            </p>
+
+                        </div>
 
                     )}
 
 
-                    {/* ERROR */}
+                    {/* ==================================
+                        ERROR
+                    ================================== */}
 
                     {!loading && error && (
 
-                        <p className="categories-message">
-                            {error}
-                        </p>
+                        <div className="categories-message">
+
+                            <p>
+                                {error}
+                            </p>
+
+
+                            <Button
+                                onClick={fetchCategories}
+                            >
+                                Try Again
+                            </Button>
+
+                        </div>
 
                     )}
 
 
-                    {/* REAL CATEGORIES */}
+                    {/* ==================================
+                        REAL BACKEND CATEGORIES
+                    ================================== */}
 
                     {!loading &&
                         !error &&
-                        categories.length > 0 &&
+                        categories.length > 0 && (
 
-                        categories.map((category) => (
+                            categories.map((category) => (
 
-                            <Cards
-                                key={category._id}
+                                <Cards
+                                    key={category._id}
 
-                                title={category.name}
+                                    title={category.name}
 
-                                description={
-                                    category.description ||
-                                    `Explore ${category.name} places in Nashik.`
-                                }
+                                    description={
+                                        category.description ||
+                                        `Explore beautiful ${category.name.toLowerCase()} places and destinations across Nashik.`
+                                    }
 
-                                icon={
-                                    category.icon ||
-                                    "📍"
-                                }
+                                    buttonText="Explore Category →"
 
-                                buttonText="Explore Category →"
+                                    onClick={() =>
+                                        handleCategoryClick(
+                                            category._id
+                                        )
+                                    }
+                                />
 
-                                onClick={() =>
-                                    handleCategoryClick(
-                                        category._id
-                                    )
-                                }
-                            />
+                            ))
 
-                        ))
-                    }
+                        )}
 
 
-                    {/* NO CATEGORIES */}
+                    {/* ==================================
+                        NO CATEGORIES
+                    ================================== */}
 
                     {!loading &&
                         !error &&
                         categories.length === 0 && (
 
-                            <p className="categories-message">
-                                No categories available.
-                            </p>
+                            <div className="categories-message">
+
+                                <p>
+                                    No categories available.
+                                </p>
+
+
+                                <Button
+                                    onClick={fetchCategories}
+                                >
+                                    Refresh
+                                </Button>
+
+                            </div>
 
                         )}
 
@@ -253,9 +291,9 @@ function Home() {
             </section>
 
 
-            {/* ============================= */}
-            {/* WHY NASHIK EXPLORE */}
-            {/* ============================= */}
+            {/* ==========================================
+                WHY NASHIK EXPLORE
+            ========================================== */}
 
             <section className="why-section">
 
@@ -273,6 +311,8 @@ function Home() {
                 <div className="features-container">
 
 
+                    {/* DISCOVER PLACES */}
+
                     <div className="feature-card">
 
                         <h3>
@@ -282,11 +322,13 @@ function Home() {
                         <p>
                             Find temples, historical places,
                             nature spots, forts and other
-                            attractions.
+                            attractions across Nashik.
                         </p>
 
                     </div>
 
+
+                    {/* EXPLORE CATEGORIES */}
 
                     <div className="feature-card">
 
@@ -303,15 +345,18 @@ function Home() {
                     </div>
 
 
+                    {/* REVIEWS */}
+
                     <div className="feature-card">
 
                         <h3>
-                            Save Favorites
+                            Read Reviews
                         </h3>
 
                         <p>
-                            Save your favorite places and
-                            access them whenever you want.
+                            Check ratings and reviews to
+                            understand the experiences of
+                            other visitors.
                         </p>
 
                     </div>
@@ -330,4 +375,3 @@ function Home() {
 
 
 export default Home;
-

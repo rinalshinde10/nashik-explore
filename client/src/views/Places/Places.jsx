@@ -1,6 +1,6 @@
-
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
+
 import Button from "../../components/Button/Button";
 
 import "./Places.css";
@@ -17,46 +17,98 @@ function Places() {
 
     const navigate = useNavigate();
 
+    const [searchParams, setSearchParams] = useSearchParams();
+
+
+    // ==========================================
+    // STATES
+    // ==========================================
+
     const [places, setPlaces] = useState([]);
+
     const [categories, setCategories] = useState([]);
 
-    const [search, setSearch] = useState("");
-    const [category, setCategory] = useState("");
+    const [search, setSearch] = useState(
+        searchParams.get("search") || ""
+    );
+
+    const [category, setCategory] = useState(
+        searchParams.get("category") || ""
+    );
 
     const [userRatings, setUserRatings] = useState({});
 
+    const [loading, setLoading] = useState(true);
 
-    // =============================
+    const [categoriesLoading, setCategoriesLoading] =
+        useState(true);
+
+    const [error, setError] = useState("");
+
+    const [categoriesError, setCategoriesError] =
+        useState("");
+
+
+    // ==========================================
     // INITIAL LOAD
-    // =============================
+    // ==========================================
 
     useEffect(() => {
 
-        fetchPlaces();
         fetchCategories();
 
     }, []);
 
 
-    // =============================
+    // ==========================================
+    // FETCH PLACES WHEN FILTER CHANGES
+    // ==========================================
+
+    useEffect(() => {
+
+        fetchPlaces(
+            search,
+            category
+        );
+
+    }, [category]);
+
+
+    // ==========================================
     // FETCH PLACES
-    // =============================
+    // ==========================================
 
     const fetchPlaces = async (
-        searchValue = search,
-        categoryValue = category
+        searchValue = "",
+        categoryValue = ""
     ) => {
 
         try {
 
+            setLoading(true);
+
+            setError("");
+
             const data = await getPlaces({
+
                 search: searchValue,
+
                 category: categoryValue
+
             });
 
-            console.log("Places:", data);
 
-            setPlaces(data.places || []);
+            console.log(
+                "Places:",
+                data
+            );
+
+
+            setPlaces(
+                Array.isArray(data.places)
+                    ? data.places
+                    : []
+            );
 
         } catch (error) {
 
@@ -65,23 +117,47 @@ function Places() {
                 error.message
             );
 
+            setError(
+                "Unable to load places. Please try again."
+            );
+
+        } finally {
+
+            setLoading(false);
+
         }
+
     };
 
 
-    // =============================
+    // ==========================================
     // FETCH CATEGORIES
-    // =============================
+    // ==========================================
 
     const fetchCategories = async () => {
 
         try {
 
-            const data = await getCategories();
+            setCategoriesLoading(true);
 
-            console.log("Categories:", data);
+            setCategoriesError("");
 
-            setCategories(data.categories || []);
+
+            const data =
+                await getCategories();
+
+
+            console.log(
+                "Categories:",
+                data
+            );
+
+
+            setCategories(
+                Array.isArray(data.categories)
+                    ? data.categories
+                    : []
+            );
 
         } catch (error) {
 
@@ -90,64 +166,190 @@ function Places() {
                 error.message
             );
 
+            setCategoriesError(
+                "Unable to load categories."
+            );
+
+        } finally {
+
+            setCategoriesLoading(false);
+
         }
+
     };
 
 
-    // =============================
+    // ==========================================
     // SEARCH
-    // =============================
+    // ==========================================
 
     const handleSearch = (event) => {
 
-        const value = event.target.value;
+        const value =
+            event.target.value;
+
 
         setSearch(value);
 
-        fetchPlaces(value, category);
+
+        setSearchParams(
+            (previousParams) => {
+
+                const params =
+                    new URLSearchParams(
+                        previousParams
+                    );
+
+
+                if (value.trim()) {
+
+                    params.set(
+                        "search",
+                        value
+                    );
+
+                } else {
+
+                    params.delete(
+                        "search"
+                    );
+
+                }
+
+
+                return params;
+
+            }
+        );
+
+
+        fetchPlaces(
+            value,
+            category
+        );
 
     };
 
 
-    // =============================
+    // ==========================================
     // CATEGORY FILTER
-    // =============================
+    // ==========================================
 
     const handleCategoryChange = (event) => {
 
-        const value = event.target.value;
+        const value =
+            event.target.value;
+
 
         setCategory(value);
 
-        fetchPlaces(search, value);
+
+        setSearchParams(
+            (previousParams) => {
+
+                const params =
+                    new URLSearchParams(
+                        previousParams
+                    );
+
+
+                if (value) {
+
+                    params.set(
+                        "category",
+                        value
+                    );
+
+                } else {
+
+                    params.delete(
+                        "category"
+                    );
+
+                }
+
+
+                return params;
+
+            }
+        );
+
+
+        fetchPlaces(
+            search,
+            value
+        );
 
     };
 
 
-    // =============================
-    // RATING
-    // =============================
+    // ==========================================
+    // CLEAR FILTERS
+    // ==========================================
 
-    const handleRating = async (placeId, rating) => {
+    const handleClearFilters = () => {
+
+        setSearch("");
+
+        setCategory("");
+
+
+        setSearchParams({});
+
+
+        fetchPlaces(
+            "",
+            ""
+        );
+
+    };
+
+
+    // ==========================================
+    // RATING
+    // ==========================================
+
+    const handleRating = async (
+        placeId,
+        rating
+    ) => {
 
         try {
 
-            const data = await createReview({
-                place: placeId,
-                rating: rating,
-                comment: `Rated ${rating} stars`
-            });
+            const data =
+                await createReview({
 
-            console.log("Rating response:", data);
+                    place: placeId,
 
+                    rating: rating,
 
-            setUserRatings((previousRatings) => ({
-                ...previousRatings,
-                [placeId]: rating
-            }));
+                    comment:
+                        `Rated ${rating} stars`
+
+                });
 
 
-            await fetchPlaces(search, category);
+            console.log(
+                "Rating response:",
+                data
+            );
+
+
+            setUserRatings(
+                (previousRatings) => ({
+
+                    ...previousRatings,
+
+                    [placeId]: rating
+
+                })
+            );
+
+
+            await fetchPlaces(
+                search,
+                category
+            );
 
         } catch (error) {
 
@@ -156,34 +358,58 @@ function Places() {
                 error.message
             );
 
+
+            alert(
+                error.message ||
+                "Please login to submit a rating."
+            );
+
         }
 
     };
 
 
-    // =============================
+    // ==========================================
     // VIEW PLACE DETAILS
-    // =============================
+    // ==========================================
 
-    const viewPlaceDetails = (placeId) => {
+    const viewPlaceDetails = (
+        placeId
+    ) => {
 
-        navigate(`/places/${placeId}`);
+        navigate(
+            `/places/${placeId}`
+        );
 
     };
 
 
-    // =============================
+    // ==========================================
+    // RETRY
+    // ==========================================
+
+    const handleRetry = () => {
+
+        fetchPlaces(
+            search,
+            category
+        );
+
+    };
+
+
+    // ==========================================
     // JSX
-    // =============================
+    // ==========================================
 
     return (
 
         <main className="places-page">
 
 
-            {/* ============================= */}
-            {/* HEADER */}
-            {/* ============================= */}
+            {/* ==========================================
+                HEADER
+            ========================================== */}
 
             <section className="places-header">
 
@@ -198,9 +424,9 @@ function Places() {
                 />
 
 
-                {/* ============================= */}
-                {/* SEARCH + CATEGORY */}
-                {/* ============================= */}
+                {/* ==========================================
+                    FILTERS
+                ========================================== */}
 
                 <div className="places-filters">
 
@@ -213,7 +439,9 @@ function Places() {
                             type="text"
                             placeholder="Search places..."
                             value={search}
-                            onChange={handleSearch}
+                            onChange={
+                                handleSearch
+                            }
                         />
 
                     </div>
@@ -225,172 +453,375 @@ function Places() {
 
                         <select
                             value={category}
-                            onChange={handleCategoryChange}
+                            onChange={
+                                handleCategoryChange
+                            }
+                            disabled={
+                                categoriesLoading
+                            }
                         >
 
                             <option value="">
-                                All Categories
+                                {categoriesLoading
+                                    ? "Loading categories..."
+                                    : "All Categories"}
                             </option>
 
 
-                            {categories.map((item) => (
+                            {categories.map(
+                                (item) => (
 
-                                <option
-                                    key={item._id}
-                                    value={item._id}
-                                >
-                                    {item.name}
-                                </option>
+                                    <option
+                                        key={
+                                            item._id
+                                        }
+                                        value={
+                                            item._id
+                                        }
+                                    >
 
-                            ))}
+                                        {item.name}
+
+                                    </option>
+
+                                )
+                            )}
 
                         </select>
 
                     </div>
 
+
+                    {/* CLEAR FILTER */}
+
+                    {(search || category) && (
+
+                        <Button
+                            type="button"
+                            onClick={
+                                handleClearFilters
+                            }
+                        >
+                            Clear Filters
+                        </Button>
+
+                    )}
+
                 </div>
+
+
+                {/* CATEGORY ERROR */}
+
+                {categoriesError && (
+
+                    <div className="no-places">
+
+                        <p>
+                            {categoriesError}
+                        </p>
+
+
+                        <Button
+                            type="button"
+                            onClick={
+                                fetchCategories
+                            }
+                        >
+                            Try Again
+                        </Button>
+
+                    </div>
+
+                )}
 
             </section>
 
 
-            {/* ============================= */}
-            {/* PLACES */}
-            {/* ============================= */}
+            {/* ==========================================
+                PLACES CONTENT
+            ========================================== */}
 
             <section className="places-content">
 
                 <div className="places-grid">
 
 
-                    {places.length > 0 ? (
+                    {/* ==================================
+                        LOADING
+                    ================================== */}
 
-                        places.map((place) => {
-
-
-                            const selectedRating =
-                                userRatings[place._id] ||
-                                Math.round(
-                                    place.averageRating || 0
-                                );
-
-
-                            return (
-
-                                <div
-                                    className="place-card"
-                                    key={place._id}
-                                >
-
-                                    <div className="place-card-content">
-
-
-                                        {/* ============================= */}
-                                        {/* PLACE NAME */}
-                                        {/* ============================= */}
-
-                                        <h2>
-                                            {place.name}
-                                        </h2>
-
-
-                                        {/* ============================= */}
-                                        {/* CATEGORY */}
-                                        {/* ============================= */}
-
-                                        <p className="place-category">
-                                            {place.category?.name}
-                                        </p>
-
-
-                                        {/* ============================= */}
-                                        {/* RATING */}
-                                        {/* ============================= */}
-
-                                        <div className="place-rating">
-
-                                            <div className="rating-stars">
-
-                                                {[1, 2, 3, 4, 5].map(
-                                                    (star) => (
-
-                                                        <button
-                                                            key={star}
-                                                            type="button"
-                                                            className={
-                                                                star <= selectedRating
-                                                                    ? "rating-star active"
-                                                                    : "rating-star"
-                                                            }
-                                                            onClick={() =>
-                                                                handleRating(
-                                                                    place._id,
-                                                                    star
-                                                                )
-                                                            }
-                                                            aria-label={`Rate ${star} stars`}
-                                                        >
-
-                                                            ★
-
-                                                        </button>
-
-                                                    )
-                                                )}
-
-                                            </div>
-
-                                        </div>
-
-
-                                        {/* ============================= */}
-                                        {/* DESCRIPTION */}
-                                        {/* ============================= */}
-
-                                        <p className="place-description">
-                                            {place.description}
-                                        </p>
-
-
-                                        {/* ============================= */}
-                                        {/* LOCATION */}
-                                        {/* ============================= */}
-
-                                        <p className="place-location">
-                                            📍 {place.location}
-                                        </p>
-
-
-                                        {/* ============================= */}
-                                        {/* VIEW DETAILS BUTTON */}
-                                        {/* ============================= */}
-
-                                        <button
-                                            className="map-button"
-                                            onClick={() =>
-                                                viewPlaceDetails(
-                                                    place._id
-                                                )
-                                            }
-                                        >
-                                            View Place Details
-                                        </button>
-
-
-                                    </div>
-
-                                </div>
-
-                            );
-
-                        })
-
-                    ) : (
+                    {loading && (
 
                         <p className="no-places">
-                            No places found.
+                            Loading places...
                         </p>
 
                     )}
+
+
+                    {/* ==================================
+                        ERROR
+                    ================================== */}
+
+                    {!loading && error && (
+
+                        <div className="no-places">
+
+                            <p>
+                                {error}
+                            </p>
+
+
+                            <Button
+                                type="button"
+                                onClick={
+                                    handleRetry
+                                }
+                            >
+                                Try Again
+                            </Button>
+
+                        </div>
+
+                    )}
+
+
+                    {/* ==================================
+                        PLACES
+                    ================================== */}
+
+                    {!loading &&
+                        !error &&
+                        places.length > 0 &&
+
+                        places.map(
+                            (place) => {
+
+                                const selectedRating =
+                                    userRatings[
+                                        place._id
+                                    ] ||
+                                    Math.round(
+                                        place.averageRating ||
+                                        0
+                                    );
+
+
+                                return (
+
+                                    <div
+                                        className="place-card"
+                                        key={
+                                            place._id
+                                        }
+                                    >
+
+                                        <div className="place-card-content">
+
+
+                                            {/* NAME */}
+
+                                            <h2>
+                                                {place.name}
+                                            </h2>
+
+
+                                            {/* CATEGORY */}
+
+                                            <p className="place-category">
+
+                                                {
+                                                    place.category?.name ||
+                                                    "Uncategorized"
+                                                }
+
+                                            </p>
+
+
+                                            {/* RATING */}
+
+                                            <div className="place-rating">
+
+                                                <div className="rating-stars">
+
+                                                    {[1, 2, 3, 4, 5].map(
+                                                        (star) => (
+
+                                                            <button
+                                                                key={
+                                                                    star
+                                                                }
+                                                                type="button"
+                                                                className={
+                                                                    star <=
+                                                                    selectedRating
+                                                                        ? "rating-star active"
+                                                                        : "rating-star"
+                                                                }
+                                                                onClick={() =>
+                                                                    handleRating(
+                                                                        place._id,
+                                                                        star
+                                                                    )
+                                                                }
+                                                                aria-label={
+                                                                    `Rate ${star} stars`
+                                                                }
+                                                            >
+
+                                                                ★
+
+                                                            </button>
+
+                                                        )
+                                                    )}
+
+                                                </div>
+
+
+                                                <span className="rating-value">
+
+                                                    {place.averageRating
+                                                        ? place.averageRating
+                                                        : "No rating"}
+
+                                                    {" "}
+
+                                                    (
+                                                    {place.totalReviews ||
+                                                        0}
+                                                    )
+
+                                                </span>
+
+                                            </div>
+
+
+                                            {/* DESCRIPTION */}
+
+                                            <p className="place-description">
+
+                                                {
+                                                    place.description
+                                                }
+
+                                            </p>
+
+
+                                            {/* LOCATION */}
+
+                                            <p className="place-location">
+
+                                                📍{" "}
+
+                                                {
+                                                    place.location
+                                                }
+
+                                            </p>
+
+
+                                            {/* ADDRESS */}
+
+                                            {place.address && (
+
+                                                <p className="place-address">
+
+                                                    🏠{" "}
+
+                                                    {
+                                                        place.address
+                                                    }
+
+                                                </p>
+
+                                            )}
+
+
+                                            {/* TIMING */}
+
+                                            {(place.openingTime ||
+                                                place.closingTime) && (
+
+                                                <p className="place-timing">
+
+                                                    🕒{" "}
+
+                                                    {
+                                                        place.openingTime ||
+                                                        "--"
+                                                    }
+
+                                                    {" - "}
+
+                                                    {
+                                                        place.closingTime ||
+                                                        "--"
+                                                    }
+
+                                                </p>
+
+                                            )}
+
+
+                                            {/* DETAILS BUTTON */}
+
+                                            <Button
+                                                type="button"
+                                                className="map-button"
+                                                onClick={() =>
+                                                    viewPlaceDetails(
+                                                        place._id
+                                                    )
+                                                }
+                                            >
+                                                View Place Details
+                                            </Button>
+
+
+                                        </div>
+
+                                    </div>
+
+                                );
+
+                            }
+                        )
+                    }
+
+
+                    {/* ==================================
+                        NO PLACES
+                    ================================== */}
+
+                    {!loading &&
+                        !error &&
+                        places.length === 0 && (
+
+                            <div className="no-places">
+
+                                <p>
+                                    No places found.
+                                </p>
+
+
+                                {(search ||
+                                    category) && (
+
+                                    <Button
+                                        type="button"
+                                        onClick={
+                                            handleClearFilters
+                                        }
+                                    >
+                                        View All Places
+                                    </Button>
+
+                                )}
+
+                            </div>
+
+                        )}
 
                 </div>
 
@@ -404,4 +835,3 @@ function Places() {
 
 
 export default Places;
-
