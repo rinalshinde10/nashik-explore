@@ -88,6 +88,10 @@
 }
 
 
+/* ============================= */
+/* NORMAL INPUT */
+/* ============================= */
+
 .login-field input {
     width: 100%;
 
@@ -120,7 +124,8 @@
 .login-field input:focus {
     border-color: #e67e22;
 
-    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.10);
+    box-shadow:
+        0 0 0 3px rgba(230, 126, 34, 0.10);
 }
 
 
@@ -130,16 +135,95 @@
 
 
 /* ============================= */
-/* LOGIN BUTTON */
+/* PASSWORD INPUT WRAPPER */
 /* ============================= */
 
-/*
-   Button ka main design
-   Button.css se aa raha hai.
+.password-input-wrapper {
+    position: relative;
 
-   Yaha sirf Login page ke
-   width aur spacing ko control karenge.
-*/
+    width: 100%;
+}
+
+
+/* ============================= */
+/* PASSWORD INPUT */
+/* ============================= */
+
+.password-input-wrapper input {
+    padding-right: 50px;
+}
+
+
+/* ============================= */
+/* PASSWORD TOGGLE BUTTON */
+/* ============================= */
+
+.password-toggle {
+    position: absolute;
+
+    top: 50%;
+
+    right: 12px;
+
+    transform: translateY(-50%);
+
+    width: 32px;
+
+    height: 32px;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+
+.password-toggle img {
+    width: 21px;
+
+    height: 21px;
+
+    object-fit: contain;
+
+    display: block;
+
+    opacity: 0.65;
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.password-toggle:hover img {
+    opacity: 1;
+
+    transform: scale(1.08);
+}
+
+
+.password-toggle:disabled {
+    cursor: not-allowed;
+}
+
+
+.password-toggle:disabled img {
+    opacity: 0.35;
+}
+
+
+/* ============================= */
+/* LOGIN BUTTON */
+/* ============================= */
 
 .login-button {
     width: 100%;
@@ -239,6 +323,11 @@
 
     .login-card h1 {
         font-size: 26px;
+    }
+
+
+    .password-toggle {
+        right: 10px;
     }
 
 }

@@ -21,17 +21,27 @@ function PlaceDetails() {
     const navigate = useNavigate();
 
 
+    // =============================
+    // STATE
+    // =============================
+
     const [place, setPlace] = useState(null);
 
     const [reviews, setReviews] = useState([]);
 
     const [loading, setLoading] = useState(true);
 
+    const [reviewsLoading, setReviewsLoading] = useState(true);
+
     const [selectedRating, setSelectedRating] = useState(0);
 
     const [comment, setComment] = useState("");
 
     const [submitting, setSubmitting] = useState(false);
+
+    const [error, setError] = useState("");
+
+    const [reviewError, setReviewError] = useState("");
 
 
     // =============================
@@ -42,19 +52,36 @@ function PlaceDetails() {
 
         try {
 
+            setLoading(true);
+
+            setError("");
+
             const data = await getPlaces();
 
             const foundPlace = data.places?.find(
                 (item) => item._id === id
             );
 
-            setPlace(foundPlace || null);
+            if (!foundPlace) {
+
+                setError("Place not found.");
+
+                setPlace(null);
+
+                return;
+            }
+
+            setPlace(foundPlace);
 
         } catch (error) {
 
             console.error(
                 "Error fetching place:",
                 error.message
+            );
+
+            setError(
+                "Unable to load place details."
             );
 
         } finally {
@@ -74,9 +101,15 @@ function PlaceDetails() {
 
         try {
 
+            setReviewsLoading(true);
+
+            setReviewError("");
+
             const data = await getPlaceReviews(id);
 
-            setReviews(data.reviews || []);
+            setReviews(
+                data.reviews || []
+            );
 
         } catch (error) {
 
@@ -84,6 +117,14 @@ function PlaceDetails() {
                 "Error fetching reviews:",
                 error.message
             );
+
+            setReviewError(
+                "Unable to load reviews."
+            );
+
+        } finally {
+
+            setReviewsLoading(false);
 
         }
 
@@ -96,11 +137,11 @@ function PlaceDetails() {
 
     useEffect(() => {
 
+        window.scrollTo(0, 0);
+
         fetchPlace();
 
         fetchReviews();
-
-        window.scrollTo(0, 0);
 
     }, [id]);
 
@@ -124,19 +165,48 @@ function PlaceDetails() {
 
         event.preventDefault();
 
+        setReviewError("");
 
-        if (!selectedRating) {
 
-            alert("Please select a rating.");
+        // Check login
+
+        const token =
+            localStorage.getItem("token");
+
+
+        if (!token) {
+
+            alert(
+                "Please login to submit a review."
+            );
+
+            navigate("/login");
 
             return;
 
         }
 
 
+        // Check rating
+
+        if (!selectedRating) {
+
+            setReviewError(
+                "Please select a rating."
+            );
+
+            return;
+
+        }
+
+
+        // Check comment
+
         if (!comment.trim()) {
 
-            alert("Please enter your review.");
+            setReviewError(
+                "Please enter your review."
+            );
 
             return;
 
@@ -159,17 +229,26 @@ function PlaceDetails() {
             });
 
 
+            // Clear form
+
             setSelectedRating(0);
 
             setComment("");
 
 
+            // Refresh reviews
+
             await fetchReviews();
+
+
+            // Refresh place rating
 
             await fetchPlace();
 
 
-            alert("Review added successfully.");
+            alert(
+                "Review added successfully."
+            );
 
 
         } catch (error) {
@@ -180,11 +259,10 @@ function PlaceDetails() {
             );
 
 
-            alert(
+            setReviewError(
                 error.message ||
                 "Failed to add review."
             );
-
 
         } finally {
 
@@ -213,13 +291,27 @@ function PlaceDetails() {
 
 
         const mapUrl =
-            `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`;
+            `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                searchQuery
+            )}`;
 
 
         window.open(
             mapUrl,
-            "_blank"
+            "_blank",
+            "noopener,noreferrer"
         );
+
+    };
+
+
+    // =============================
+    // BACK TO PLACES
+    // =============================
+
+    const handleBack = () => {
+
+        navigate("/places");
 
     };
 
@@ -234,9 +326,13 @@ function PlaceDetails() {
 
             <main className="place-details-page">
 
-                <p className="details-message">
-                    Loading place...
-                </p>
+                <div className="details-message">
+
+                    <p>
+                        Loading place...
+                    </p>
+
+                </div>
 
             </main>
 
@@ -246,10 +342,10 @@ function PlaceDetails() {
 
 
     // =============================
-    // PLACE NOT FOUND
+    // ERROR / PLACE NOT FOUND
     // =============================
 
-    if (!place) {
+    if (error || !place) {
 
         return (
 
@@ -258,15 +354,13 @@ function PlaceDetails() {
                 <div className="details-message">
 
                     <h2>
-                        Place not found
+                        {error || "Place not found"}
                     </h2>
 
 
                     <Button
                         className="back-button"
-                        onClick={() =>
-                            navigate("/places")
-                        }
+                        onClick={handleBack}
                     >
                         Back to Places
                     </Button>
@@ -295,9 +389,7 @@ function PlaceDetails() {
 
             <Button
                 className="back-button"
-                onClick={() =>
-                    navigate("/places")
-                }
+                onClick={handleBack}
             >
                 ← Back to Places
             </Button>
@@ -309,11 +401,10 @@ function PlaceDetails() {
 
             <section className="place-details-card">
 
-
                 <div className="place-details-content">
 
 
-                    {/* NAME */}
+                    {/* PLACE NAME */}
 
                     <h1>
                         {place.name}
@@ -322,9 +413,13 @@ function PlaceDetails() {
 
                     {/* CATEGORY */}
 
-                    <p className="details-category">
-                        {place.category?.name}
-                    </p>
+                    {place.category?.name && (
+
+                        <p className="details-category">
+                            {place.category.name}
+                        </p>
+
+                    )}
 
 
                     {/* DESCRIPTION */}
@@ -336,9 +431,13 @@ function PlaceDetails() {
 
                     {/* LOCATION */}
 
-                    <p className="details-location">
-                        📍 {place.location}
-                    </p>
+                    {place.location && (
+
+                        <p className="details-location">
+                            📍 {place.location}
+                        </p>
+
+                    )}
 
 
                     {/* ADDRESS */}
@@ -389,7 +488,13 @@ function PlaceDetails() {
 
                         <span className="review-count">
 
-                            ({place.totalReviews || 0} reviews)
+                            (
+                            {place.totalReviews || 0}
+                            {" "}
+                            {place.totalReviews === 1
+                                ? "review"
+                                : "reviews"}
+                            )
 
                         </span>
 
@@ -416,10 +521,20 @@ function PlaceDetails() {
 
             <section className="review-section">
 
-
                 <h2>
                     Rate this place
                 </h2>
+
+
+                {/* REVIEW ERROR */}
+
+                {reviewError && (
+
+                    <p className="login-error">
+                        {reviewError}
+                    </p>
+
+                )}
 
 
                 {/* STAR RATING */}
@@ -461,11 +576,19 @@ function PlaceDetails() {
                     <textarea
                         value={comment}
                         onChange={(event) =>
-                            setComment(event.target.value)
+                            setComment(
+                                event.target.value
+                            )
                         }
                         placeholder="Write your review..."
                         rows="4"
+                        maxLength="500"
                     />
+
+
+                    <p className="review-character-count">
+                        {comment.length}/500
+                    </p>
 
 
                     {/* COMMON BUTTON */}
@@ -492,61 +615,96 @@ function PlaceDetails() {
 
             <section className="reviews-section">
 
-
                 <h2>
                     Reviews
                 </h2>
 
 
-                {reviews.length > 0 ? (
+                {/* REVIEWS LOADING */}
 
-                    <div className="reviews-list">
-
-                        {reviews.map(
-                            (review) => (
-
-                                <div
-                                    className="review-card"
-                                    key={review._id}
-                                >
-
-                                    <div className="review-card-top">
-
-                                        <strong>
-                                            {review.user?.name ||
-                                                "User"}
-                                        </strong>
-
-
-                                        <div className="review-card-stars">
-
-                                            {"★".repeat(
-                                                review.rating
-                                            )}
-
-                                        </div>
-
-                                    </div>
-
-
-                                    <p>
-                                        {review.comment}
-                                    </p>
-
-                                </div>
-
-                            )
-                        )}
-
-                    </div>
-
-                ) : (
+                {reviewsLoading && (
 
                     <p className="no-reviews">
-                        No reviews yet.
+                        Loading reviews...
                     </p>
 
                 )}
+
+
+                {/* REVIEW ERROR */}
+
+                {!reviewsLoading &&
+                    reviewError &&
+                    reviews.length === 0 && (
+
+                        <p className="no-reviews">
+                            Unable to load reviews.
+                        </p>
+
+                    )}
+
+
+                {/* REVIEWS LIST */}
+
+                {!reviewsLoading &&
+                    reviews.length > 0 && (
+
+                        <div className="reviews-list">
+
+                            {reviews.map(
+                                (review) => (
+
+                                    <div
+                                        className="review-card"
+                                        key={review._id}
+                                    >
+
+                                        <div className="review-card-top">
+
+                                            <strong>
+                                                {
+                                                    review.user?.name ||
+                                                    "User"
+                                                }
+                                            </strong>
+
+
+                                            <div className="review-card-stars">
+
+                                                {"★".repeat(
+                                                    review.rating
+                                                )}
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <p>
+                                            {review.comment}
+                                        </p>
+
+                                    </div>
+
+                                )
+                            )}
+
+                        </div>
+
+                    )}
+
+
+                {/* NO REVIEWS */}
+
+                {!reviewsLoading &&
+                    !reviewError &&
+                    reviews.length === 0 && (
+
+                        <p className="no-reviews">
+                            No reviews yet. Be the first to review this place.
+                        </p>
+
+                    )}
 
             </section>
 

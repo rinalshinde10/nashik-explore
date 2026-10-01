@@ -4,25 +4,101 @@ import { Link, useNavigate } from "react-router-dom";
 
 import "./Navbar.css";
 
+import Button from "../../components/Button/Button";
+
+import {
+    logoutUser
+} from "../../services/auth_service";
+
 
 function Navbar() {
 
     const navigate = useNavigate();
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    const [isLoggedIn, setIsLoggedIn] = useState(
+        !!localStorage.getItem("token")
+    );
 
 
     // =============================
-    // CHECK LOGIN
+    // CHECK AUTH STATUS
     // =============================
 
     useEffect(() => {
 
-        const token = localStorage.getItem("token");
+        const checkLoginStatus = () => {
 
-        setIsLoggedIn(!!token);
+            setIsLoggedIn(
+                !!localStorage.getItem("token")
+            );
+
+        };
+
+
+        // Login / Logout event
+        window.addEventListener(
+            "authChanged",
+            checkLoginStatus
+        );
+
+
+        // Browser storage change
+        window.addEventListener(
+            "storage",
+            checkLoginStatus
+        );
+
+
+        // Check when window becomes active
+        window.addEventListener(
+            "focus",
+            checkLoginStatus
+        );
+
+
+        return () => {
+
+            window.removeEventListener(
+                "authChanged",
+                checkLoginStatus
+            );
+
+            window.removeEventListener(
+                "storage",
+                checkLoginStatus
+            );
+
+            window.removeEventListener(
+                "focus",
+                checkLoginStatus
+            );
+
+        };
 
     }, []);
+
+
+    // =============================
+    // LOGIN
+    // =============================
+
+    const handleLogin = () => {
+
+        navigate("/login");
+
+    };
+
+
+    // =============================
+    // REGISTER
+    // =============================
+
+    const handleRegister = () => {
+
+        navigate("/register");
+
+    };
 
 
     // =============================
@@ -31,9 +107,7 @@ function Navbar() {
 
     const handleLogout = () => {
 
-        localStorage.removeItem("token");
-
-        localStorage.removeItem("user");
+        logoutUser();
 
         setIsLoggedIn(false);
 
@@ -42,11 +116,18 @@ function Navbar() {
     };
 
 
+    // =============================
+    // JSX
+    // =============================
+
     return (
 
         <nav className="navbar">
 
+
+            {/* ============================= */}
             {/* LOGO */}
+            {/* ============================= */}
 
             <Link
                 to="/"
@@ -56,43 +137,64 @@ function Navbar() {
             </Link>
 
 
+            {/* ============================= */}
             {/* NAVIGATION */}
+            {/* ============================= */}
 
             <div className="navbar-links">
+
+
+                {/* HOME */}
 
                 <Link to="/">
                     Home
                 </Link>
+
+
+                {/* PLACES */}
 
                 <Link to="/places">
                     Places
                 </Link>
 
 
-                {!isLoggedIn ? (
+                {/* ============================= */}
+                {/* LOGGED OUT */}
+                {/* ============================= */}
+
+                {!isLoggedIn && (
 
                     <>
-                        <Link to="/login">
-                            Login
-                        </Link>
 
-                        <Link
-                            to="/register"
-                            className="register-nav-button"
+                        <Button
+                            onClick={handleLogin}
+                        >
+                            Login
+                        </Button>
+
+
+                        <Button
+                            onClick={handleRegister}
                         >
                             Register
-                        </Link>
+                        </Button>
+
                     </>
 
-                ) : (
+                )}
 
-                    <button
-                        type="button"
-                        className="logout-button"
+
+                {/* ============================= */}
+                {/* LOGGED IN */}
+                {/* ============================= */}
+
+                {isLoggedIn && (
+
+                    <Button
                         onClick={handleLogout}
                     >
                         Logout
-                    </button>
+                    </Button>
 
                 )}
 

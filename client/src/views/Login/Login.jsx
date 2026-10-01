@@ -6,21 +6,31 @@ import { useNavigate } from "react-router-dom";
 
 import Button from "../../components/Button/Button";
 
+import { loginUser } from "../../services/auth_service";
+
+import showIcon from "../../assets/Icons/show.png";
+import blindIcon from "../../assets/Icons/blind.png";
+
 
 function Login() {
 
     const navigate = useNavigate();
 
+
     const [email, setEmail] = useState("");
+
     const [password, setPassword] = useState("");
 
+    const [showPassword, setShowPassword] = useState(false);
+
     const [loading, setLoading] = useState(false);
+
     const [error, setError] = useState("");
 
 
-    // ================================
+    // =============================
     // LOGIN
-    // ================================
+    // =============================
 
     const handleSubmit = async (event) => {
 
@@ -29,11 +39,18 @@ function Login() {
         setError("");
 
 
-        if (!email || !password) {
+        // =============================
+        // VALIDATION
+        // =============================
 
-            setError("Please enter email and password");
+        if (!email.trim() || !password) {
+
+            setError(
+                "Please enter email and password"
+            );
 
             return;
+
         }
 
 
@@ -42,37 +59,22 @@ function Login() {
             setLoading(true);
 
 
-            const response = await fetch(
-                "http://localhost:8080/api/auth/login",
-                {
-                    method: "POST",
+            // =============================
+            // LOGIN API
+            // =============================
 
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+            const data = await loginUser({
 
-                    body: JSON.stringify({
-                        email,
-                        password
-                    })
-                }
-            );
+                email: email.trim(),
+
+                password: password
+
+            });
 
 
-            const data = await response.json();
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data.message || "Login failed"
-                );
-            }
-
-
-            // ================================
-            // SAVE JWT TOKEN
-            // ================================
+            // =============================
+            // SAVE TOKEN
+            // =============================
 
             localStorage.setItem(
                 "token",
@@ -80,9 +82,9 @@ function Login() {
             );
 
 
-            // ================================
+            // =============================
             // SAVE USER
-            // ================================
+            // =============================
 
             localStorage.setItem(
                 "user",
@@ -90,17 +92,23 @@ function Login() {
             );
 
 
-            console.log("Login successful");
+            // =============================
+            // UPDATE NAVBAR LOGIN STATUS
+            // =============================
 
-            console.log(
-                "Token saved:",
-                data.token
+            window.dispatchEvent(
+                new Event("authChanged")
             );
 
 
-            // ================================
+            console.log(
+                "Login successful"
+            );
+
+
+            // =============================
             // GO TO PLACES
-            // ================================
+            // =============================
 
             navigate("/places");
 
@@ -112,7 +120,14 @@ function Login() {
                 error
             );
 
-            setError(error.message);
+
+            const message =
+                error.response?.data?.message ||
+                error.message ||
+                "Login failed. Please try again.";
+
+
+            setError(message);
 
 
         } finally {
@@ -124,11 +139,30 @@ function Login() {
     };
 
 
+    // =============================
+    // TOGGLE PASSWORD
+    // =============================
+
+    const togglePassword = () => {
+
+        setShowPassword(
+            (previousValue) => !previousValue
+        );
+
+    };
+
+
     return (
 
         <main className="login-page">
 
+
             <div className="login-card">
+
+
+                {/* ============================= */}
+                {/* TITLE */}
+                {/* ============================= */}
 
                 <h1>
                     Login
@@ -140,7 +174,9 @@ function Login() {
                 </p>
 
 
+                {/* ============================= */}
                 {/* ERROR */}
+                {/* ============================= */}
 
                 {error && (
 
@@ -151,56 +187,137 @@ function Login() {
                 )}
 
 
-                <form onSubmit={handleSubmit}>
+                {/* ============================= */}
+                {/* LOGIN FORM */}
+                {/* ============================= */}
+
+                <form
+                    onSubmit={handleSubmit}
+                >
 
 
+                    {/* ============================= */}
                     {/* EMAIL */}
+                    {/* ============================= */}
 
                     <div className="login-field">
 
-                        <label>
+                        <label htmlFor="email">
                             Email
                         </label>
 
 
                         <input
+                            id="email"
+
                             type="email"
+
                             placeholder="Enter your email"
+
                             value={email}
+
                             onChange={(event) =>
-                                setEmail(event.target.value)
+                                setEmail(
+                                    event.target.value
+                                )
                             }
+
+                            autoComplete="email"
+
+                            disabled={loading}
                         />
 
                     </div>
 
 
+                    {/* ============================= */}
                     {/* PASSWORD */}
+                    {/* ============================= */}
 
                     <div className="login-field">
 
-                        <label>
+                        <label htmlFor="password">
                             Password
                         </label>
 
 
-                        <input
-                            type="password"
-                            placeholder="Enter your password"
-                            value={password}
-                            onChange={(event) =>
-                                setPassword(event.target.value)
-                            }
-                        />
+                        <div className="password-input-wrapper">
+
+                            <input
+                                id="password"
+
+                                type={
+                                    showPassword
+                                        ? "text"
+                                        : "password"
+                                }
+
+                                placeholder="Enter your password"
+
+                                value={password}
+
+                                onChange={(event) =>
+                                    setPassword(
+                                        event.target.value
+                                    )
+                                }
+
+                                autoComplete="current-password"
+
+                                disabled={loading}
+                            />
+
+
+                            {/* PASSWORD EYE BUTTON */}
+
+                            <button
+                                type="button"
+
+                                className="password-toggle"
+
+                                onClick={
+                                    togglePassword
+                                }
+
+                                disabled={loading}
+
+                                aria-label={
+                                    showPassword
+                                        ? "Hide password"
+                                        : "Show password"
+                                }
+                            >
+
+                                <img
+                                    src={
+                                        showPassword
+                                            ? blindIcon
+                                            : showIcon
+                                    }
+
+                                    alt={
+                                        showPassword
+                                            ? "Hide password"
+                                            : "Show password"
+                                    }
+                                />
+
+                            </button>
+
+                        </div>
 
                     </div>
 
 
-                    {/* COMMON BUTTON */}
+                    {/* ============================= */}
+                    {/* LOGIN BUTTON */}
+                    {/* ============================= */}
 
                     <Button
                         type="submit"
+
                         className="login-button"
+
                         disabled={loading}
                     >
 
@@ -214,7 +331,9 @@ function Login() {
 
                 </form>
 
+
             </div>
+
 
         </main>
 

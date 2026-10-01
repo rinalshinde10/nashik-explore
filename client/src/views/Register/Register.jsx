@@ -1,24 +1,39 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import Button from "../../components/Button/Button";
 
 import "./Register.css";
 
-const API_URL = "http://localhost:8080/api/auth/register";
+import showIcon from "../../assets/Icons/show.png";
+import blindIcon from "../../assets/Icons/blind.png";
+
+import { registerUser } from "../../services/auth_service";
+
 
 function Register() {
 
     const navigate = useNavigate();
 
+
     const [name, setName] = useState("");
+
     const [email, setEmail] = useState("");
+
     const [password, setPassword] = useState("");
 
+    const [showPassword, setShowPassword] = useState(false);
+
     const [message, setMessage] = useState("");
+
     const [error, setError] = useState("");
+
     const [loading, setLoading] = useState(false);
 
+
+    // =============================
+    // REGISTER
+    // =============================
 
     const handleSubmit = async (event) => {
 
@@ -28,19 +43,33 @@ function Register() {
         setError("");
 
 
-        if (!name || !email || !password) {
+        // =============================
+        // VALIDATION
+        // =============================
 
-            setError("Please enter all fields");
+        if (
+            !name.trim() ||
+            !email.trim() ||
+            !password
+        ) {
+
+            setError(
+                "Please enter all fields"
+            );
 
             return;
+
         }
 
 
         if (password.length < 6) {
 
-            setError("Password must be at least 6 characters");
+            setError(
+                "Password must be at least 6 characters"
+            );
 
             return;
+
         }
 
 
@@ -49,33 +78,24 @@ function Register() {
             setLoading(true);
 
 
-            const response = await fetch(API_URL, {
+            // =============================
+            // REGISTER API
+            // =============================
 
-                method: "POST",
+            await registerUser({
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                name: name.trim(),
 
-                body: JSON.stringify({
-                    name,
-                    email,
-                    password
-                })
+                email: email.trim(),
+
+                password: password
 
             });
 
 
-            const data = await response.json();
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data.message || "Registration failed"
-                );
-            }
-
+            // =============================
+            // SUCCESS
+            // =============================
 
             setMessage(
                 "Registration successful! Redirecting to login..."
@@ -83,9 +103,17 @@ function Register() {
 
 
             setName("");
+
             setEmail("");
+
             setPassword("");
 
+            setShowPassword(false);
+
+
+            // =============================
+            // GO TO LOGIN
+            // =============================
 
             setTimeout(() => {
 
@@ -96,7 +124,20 @@ function Register() {
 
         } catch (error) {
 
-            setError(error.message);
+            console.error(
+                "Registration error:",
+                error
+            );
+
+
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Registration failed. Please try again.";
+
+
+            setError(errorMessage);
+
 
         } finally {
 
@@ -107,90 +148,180 @@ function Register() {
     };
 
 
+    // =============================
+    // PASSWORD SHOW / HIDE
+    // =============================
+
+    const togglePassword = () => {
+
+        setShowPassword(
+            (previousValue) => !previousValue
+        );
+
+    };
+
+
     return (
 
         <main className="register-page">
 
             <div className="register-card">
 
-                <h1>Create Account</h1>
+
+                {/* TITLE */}
+
+                <h1>
+                    Create Account
+                </h1>
+
 
                 <p className="register-subtitle">
                     Register to explore Nashik
                 </p>
 
 
+                {/* ERROR */}
+
                 {error && (
+
                     <p className="register-error">
                         {error}
                     </p>
+
                 )}
 
 
+                {/* SUCCESS */}
+
                 {message && (
+
                     <p className="register-success">
                         {message}
                     </p>
+
                 )}
 
 
+                {/* FORM */}
+
                 <form onSubmit={handleSubmit}>
+
+
+                    {/* NAME */}
 
                     <div className="form-group">
 
-                        <label>
+                        <label htmlFor="name">
                             Name
                         </label>
 
+
                         <input
+                            id="name"
                             type="text"
                             placeholder="Enter your name"
                             value={name}
                             onChange={(event) =>
                                 setName(event.target.value)
                             }
+                            autoComplete="name"
+                            disabled={loading}
                         />
 
                     </div>
 
 
+                    {/* EMAIL */}
+
                     <div className="form-group">
 
-                        <label>
+                        <label htmlFor="email">
                             Email
                         </label>
 
+
                         <input
+                            id="email"
                             type="email"
                             placeholder="Enter your email"
                             value={email}
                             onChange={(event) =>
                                 setEmail(event.target.value)
                             }
+                            autoComplete="email"
+                            disabled={loading}
                         />
 
                     </div>
 
+
+                    {/* PASSWORD */}
 
                     <div className="form-group">
 
-                        <label>
+                        <label htmlFor="register-password">
                             Password
                         </label>
 
-                        <input
-                            type="password"
-                            placeholder="Enter password"
-                            value={password}
-                            onChange={(event) =>
-                                setPassword(event.target.value)
-                            }
-                        />
+
+                        <div className="password-input-wrapper">
+
+                            <input
+                                id="register-password"
+                                type={
+                                    showPassword
+                                        ? "text"
+                                        : "password"
+                                }
+                                placeholder="Enter password"
+                                value={password}
+                                onChange={(event) =>
+                                    setPassword(
+                                        event.target.value
+                                    )
+                                }
+                                autoComplete="new-password"
+                                disabled={loading}
+                            />
+
+
+                            {/* SHOW / HIDE ICON */}
+
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={togglePassword}
+                                disabled={loading}
+                                aria-label={
+                                    showPassword
+                                        ? "Hide password"
+                                        : "Show password"
+                                }
+                            >
+
+                                <img
+                                    src={
+                                        showPassword
+                                            ? showIcon
+                                            : blindIcon
+                                    }
+                                    alt={
+                                        showPassword
+                                            ? "Hide password"
+                                            : "Show password"
+                                    }
+                                />
+
+                            </button>
+
+                        </div>
 
                     </div>
 
 
-                    <button
+                    {/* REGISTER BUTTON */}
+
+                    <Button
                         type="submit"
                         className="register-button"
                         disabled={loading}
@@ -201,22 +332,28 @@ function Register() {
                             : "Register"
                         }
 
-                    </button>
+                    </Button>
+
 
                 </form>
 
+
+                {/* LOGIN LINK */}
 
                 <p className="login-link">
 
                     Already have an account?{" "}
 
                     <span
-                        onClick={() => navigate("/login")}
+                        onClick={() =>
+                            navigate("/login")
+                        }
                     >
                         Login
                     </span>
 
                 </p>
+
 
             </div>
 
@@ -228,4 +365,3 @@ function Register() {
 
 
 export default Register;
-
