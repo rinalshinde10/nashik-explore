@@ -8,7 +8,7 @@ import About from "./views/About/About";
 import Login from "./views/Login/Login";
 import Register from "./views/Register/Register";
 import Profile from "./views/Profile/Profile";
-import Admin from "./views/Admin/Admin";
+                                                                                                                                                
 
 
 function App() {
@@ -90,14 +90,7 @@ function App() {
                 />
 
 
-                {/* ============================= */}
-                {/* ADMIN */}
-                {/* ============================= */}
-
-                <Route
-                    path="/admin"
-                    element={<Admin />}
-                />
+                
 
 
             </Routes>
