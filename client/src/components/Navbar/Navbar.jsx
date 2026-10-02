@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -36,21 +35,18 @@ function Navbar() {
         };
 
 
-        // Login / Logout event
         window.addEventListener(
             "authChanged",
             checkLoginStatus
         );
 
 
-        // Browser storage change
         window.addEventListener(
             "storage",
             checkLoginStatus
         );
 
 
-        // Check when window becomes active
         window.addEventListener(
             "focus",
             checkLoginStatus
@@ -158,6 +154,13 @@ function Navbar() {
                 </Link>
 
 
+                {/* ABOUT */}
+
+                <Link to="/about">
+                    About
+                </Link>
+
+
                 {/* ============================= */}
                 {/* LOGGED OUT */}
                 {/* ============================= */}
@@ -208,4 +211,3 @@ function Navbar() {
 
 
 export default Navbar;
-

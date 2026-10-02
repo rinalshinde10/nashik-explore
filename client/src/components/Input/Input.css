@@ -1,0 +1,24 @@
+.common-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    background-color: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.common-input:focus {
+    border-color: #9b59b6;
+    box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.12);
+}
+
+.common-input::placeholder {
+    color: #999;
+}
+
+.common-input:disabled {
+    background-color: #f3f3f3;
+    cursor: not-allowed;
+}

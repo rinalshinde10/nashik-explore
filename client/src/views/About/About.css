@@ -1,0 +1,209 @@
+/* ============================= */
+/* ABOUT PAGE */
+/* ============================= */
+
+.about-page {
+    min-height: 100vh;
+    padding: 40px 50px 60px;
+    background-color: #f5f7fa;
+    box-sizing: border-box;
+}
+
+
+/* ============================= */
+/* ABOUT HEADER */
+/* ============================= */
+
+.about-header {
+    padding: 50px 40px;
+    margin-bottom: 30px;
+    background-color: #ffffff;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+}
+
+
+/* ============================= */
+/* INTRODUCTION */
+/* ============================= */
+
+.about-intro {
+    padding: 45px 50px;
+    margin-bottom: 30px;
+    background-color: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+}
+
+.about-intro-content {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.about-intro-content h2 {
+    margin: 0 0 20px;
+    color: #222222;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.about-intro-content p {
+    margin: 0 auto 15px;
+    color: #666666;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.about-intro-content p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* ============================= */
+/* FEATURES */
+/* ============================= */
+
+.about-features {
+    padding: 45px 40px;
+    margin-bottom: 30px;
+    background-color: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+    text-align: center;
+}
+
+
+/* ============================= */
+/* ABOUT CARDS */
+/* ============================= */
+
+.about-cards {
+    width: 100%;
+    max-width: 1100px;
+    margin: 35px auto 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+    box-sizing: border-box;
+}
+
+.about-cards > * {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+
+/* ============================= */
+/* PURPOSE SECTION */
+/* ============================= */
+
+.about-purpose {
+    padding: 45px 50px;
+    background-color: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+}
+
+.about-purpose-content {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.about-purpose-content h2 {
+    margin: 0 0 20px;
+    color: #222222;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.about-purpose-content p {
+    margin: 0 auto 15px;
+    color: #666666;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.about-highlight {
+    margin-top: 25px !important;
+    color: #e67e22 !important;
+    font-size: 19px !important;
+    font-weight: 700;
+}
+
+
+/* ============================= */
+/* TABLET */
+/* ============================= */
+
+@media (max-width: 1000px) {
+
+    .about-page {
+        padding: 30px 25px 50px;
+    }
+
+    .about-header {
+        padding: 40px 25px;
+    }
+
+    .about-intro,
+    .about-features,
+    .about-purpose {
+        padding: 35px 25px;
+    }
+
+    .about-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* ============================= */
+/* MOBILE */
+/* ============================= */
+
+@media (max-width: 600px) {
+
+    .about-page {
+        padding: 20px 15px 40px;
+    }
+
+    .about-header {
+        padding: 35px 18px;
+        border-radius: 14px;
+    }
+
+    .about-intro,
+    .about-features,
+    .about-purpose {
+        padding: 30px 18px;
+        border-radius: 14px;
+    }
+
+    .about-intro-content h2,
+    .about-purpose-content h2 {
+        font-size: 25px;
+    }
+
+    .about-intro-content p,
+    .about-purpose-content p {
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+    .about-cards {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        margin-top: 25px;
+    }
+
+    .about-highlight {
+        font-size: 17px !important;
+    }
+}

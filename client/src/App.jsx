@@ -1,16 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import Navbar from "./components/Navbar/Navbar";
-
+import Footer from "./components/Footer/Footer";
 import Home from "./views/Home/Home";
 import Places from "./views/Places/Places";
 import PlaceDetails from "./views/PlaceDetails/PlaceDetails";
-
+import About from "./views/About/About";
 import Login from "./views/Login/Login";
 import Register from "./views/Register/Register";
-
 import Profile from "./views/Profile/Profile";
-
 import Admin from "./views/Admin/Admin";
 
 
@@ -27,6 +24,10 @@ function App() {
             <Navbar />
 
 
+            {/* ============================= */}
+            {/* ALL PAGES */}
+            {/* ============================= */}
+
             <Routes>
 
 
@@ -38,7 +39,10 @@ function App() {
                     path="/"
                     element={<Home />}
                 />
-
+<Route
+    path="/about"
+    element={<About />}
+/>
 
                 {/* ============================= */}
                 {/* AUTHENTICATION */}
@@ -84,18 +88,32 @@ function App() {
                     path="/profile"
                     element={<Profile />}
                 />
-<Route
-    path="/admin"
-    element={<Admin />}
-/>
+
+
+                {/* ============================= */}
+                {/* ADMIN */}
+                {/* ============================= */}
+
+                <Route
+                    path="/admin"
+                    element={<Admin />}
+                />
+
 
             </Routes>
+
+
+            {/* ============================= */}
+            {/* COMMON FOOTER */}
+            {/* ============================= */}
+
+            <Footer />
+
 
         </BrowserRouter>
 
     );
 
 }
-
-
 export default App;
+

@@ -1,17 +1,39 @@
 import Category from "../models/Category.js";
 
+
+// =====================================
+// CREATE CATEGORY
+// =====================================
+
 export const createCategory = async (req, res) => {
     try {
-        const { name, description, image } = req.body;
+        const {
+            name,
+            description,
+            image
+        } = req.body;
 
-        if (!name) {
+
+        // Validate name
+        if (!name || !name.trim()) {
             return res.status(400).json({
                 success: false,
                 message: "Category name is required"
             });
         }
 
-        const existingCategory = await Category.findOne({ name });
+
+        const categoryName = name.trim();
+
+
+        // Check duplicate category
+        const existingCategory = await Category.findOne({
+            name: {
+                $regex: `^${categoryName}$`,
+                $options: "i"
+            }
+        });
+
 
         if (existingCategory) {
             return res.status(400).json({
@@ -20,11 +42,18 @@ export const createCategory = async (req, res) => {
             });
         }
 
+
+        // Create category
         const category = await Category.create({
-            name,
-            description,
-            image
+            name: categoryName,
+            description: description
+                ? description.trim()
+                : "",
+            image: image
+                ? image.trim()
+                : ""
         });
+
 
         res.status(201).json({
             success: true,
@@ -32,7 +61,18 @@ export const createCategory = async (req, res) => {
             category
         });
 
+
     } catch (error) {
+
+        // Duplicate key error
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: "Category already exists"
+            });
+        }
+
+
         res.status(500).json({
             success: false,
             message: "Failed to create category",
@@ -42,9 +82,17 @@ export const createCategory = async (req, res) => {
 };
 
 
+// =====================================
+// GET ALL CATEGORIES
+// =====================================
+
 export const getCategories = async (req, res) => {
     try {
-        const categories = await Category.find().sort({ name: 1 });
+
+        const categories = await Category
+            .find()
+            .sort({ name: 1 });
+
 
         res.status(200).json({
             success: true,
@@ -52,7 +100,9 @@ export const getCategories = async (req, res) => {
             categories
         });
 
+
     } catch (error) {
+
         res.status(500).json({
             success: false,
             message: "Failed to fetch categories",

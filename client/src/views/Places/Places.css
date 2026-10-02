@@ -32,18 +32,20 @@
 
 
 /* ============================= */
-/* SEARCH + CATEGORY FILTERS */
+/* SEARCH + CATEGORY + CLEAR */
 /* ============================= */
 
 .places-filters {
-    width: 650px;
+    width: 850px;
     max-width: 100%;
-    height: 56px;
+    min-height: 56px;
 
     margin: 30px auto 0;
 
     display: flex;
     align-items: stretch;
+
+    gap: 0;
 
     background-color: #ffffff;
 
@@ -65,7 +67,7 @@
 .places-search {
     flex: 1;
     min-width: 0;
-    height: 100%;
+    height: 56px;
 }
 
 
@@ -110,7 +112,7 @@
     flex: 0 0 190px;
 
     width: 190px;
-    height: 100%;
+    height: 56px;
 
     border-left: 1px solid #dddddd;
 
@@ -145,6 +147,50 @@
 
 .category-filter select:focus {
     background-color: #ffffff;
+}
+
+
+/* ============================= */
+/* CLEAR FILTER BUTTON */
+/* ============================= */
+
+.places-filters > button {
+    flex: 0 0 auto;
+
+    height: 56px;
+
+    margin: 0;
+
+    padding: 0 18px;
+
+    border: none;
+    border-left: 1px solid #dddddd;
+
+    border-radius: 0;
+
+    background-color: #e67e22;
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background-color 0.3s ease,
+        transform 0.2s ease;
+}
+
+
+.places-filters > button:hover {
+    background-color: #d35400;
+
+    transform: none;
 }
 
 
@@ -222,11 +268,28 @@
 
 
 /* ============================= */
-/* PLACE NAME */
+/* PLACE TITLE + FAVORITE */
 /* ============================= */
 
-.place-card-content h2 {
-    margin: 0 0 8px;
+.place-title-row {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-bottom: 8px;
+
+    box-sizing: border-box;
+}
+
+
+.place-title-row h2 {
+    margin: 0;
 
     color: #222222;
 
@@ -238,6 +301,70 @@
     text-align: center;
 
     word-break: break-word;
+}
+
+
+/* ============================= */
+/* FAVORITE BUTTON */
+/* ============================= */
+
+.favorite-button {
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background-color: #f5f5f5;
+
+    color: #999999;
+
+    font-size: 25px;
+
+    line-height: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.favorite-button:hover {
+    color: #e67e22;
+
+    background-color: #fff2e8;
+
+    transform: scale(1.08);
+}
+
+
+.favorite-button.active {
+    color: #e67e22;
+
+    background-color: #fff2e8;
+}
+
+
+.favorite-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+    transform: none;
 }
 
 
@@ -331,6 +458,21 @@
 
 
 /* ============================= */
+/* RATING VALUE */
+/* ============================= */
+
+.rating-value {
+    margin-left: 8px;
+
+    color: #666666;
+
+    font-size: 14px;
+
+    white-space: nowrap;
+}
+
+
+/* ============================= */
 /* DESCRIPTION */
 /* ============================= */
 
@@ -358,6 +500,40 @@
 
     font-size: 15px;
     font-weight: 500;
+
+    line-height: 1.5;
+
+    text-align: center;
+}
+
+
+/* ============================= */
+/* ADDRESS */
+/* ============================= */
+
+.place-address {
+    margin: 8px 0 0;
+
+    color: #555555;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+    text-align: center;
+}
+
+
+/* ============================= */
+/* TIMING */
+/* ============================= */
+
+.place-timing {
+    margin: 8px 0 0;
+
+    color: #555555;
+
+    font-size: 14px;
 
     line-height: 1.5;
 
@@ -445,6 +621,11 @@
         padding: 25px;
     }
 
+
+    .places-filters {
+        width: 100%;
+    }
+
 }
 
 
@@ -466,7 +647,9 @@
     }
 
 
+    /* ============================= */
     /* FILTERS */
+    /* ============================= */
 
     .places-filters {
         width: 100%;
@@ -475,7 +658,7 @@
 
         flex-direction: column;
 
-        overflow: visible;
+        overflow: hidden;
 
         border-radius: 10px;
     }
@@ -484,6 +667,8 @@
     .places-search {
         width: 100%;
         height: 52px;
+
+        flex: none;
     }
 
 
@@ -492,7 +677,7 @@
 
         padding: 0 15px;
 
-        border-radius: 10px 10px 0 0;
+        border-radius: 0;
     }
 
 
@@ -510,11 +695,31 @@
     .category-filter select {
         height: 52px;
 
-        border-radius: 0 0 10px 10px;
+        border-radius: 0;
     }
 
 
+    /* ============================= */
+    /* MOBILE CLEAR BUTTON */
+    /* ============================= */
+
+    .places-filters > button {
+        width: 100%;
+
+        height: 50px;
+
+        border-left: none;
+        border-top: 1px solid #dddddd;
+
+        border-radius: 0;
+
+        padding: 0 15px;
+    }
+
+
+    /* ============================= */
     /* CONTENT */
+    /* ============================= */
 
     .places-content {
         padding: 18px;
@@ -523,7 +728,9 @@
     }
 
 
+    /* ============================= */
     /* GRID */
+    /* ============================= */
 
     .places-grid {
         grid-template-columns: 1fr;
@@ -532,7 +739,9 @@
     }
 
 
+    /* ============================= */
     /* CARD */
+    /* ============================= */
 
     .place-card {
         padding: 22px;
@@ -541,10 +750,15 @@
     }
 
 
-    .place-card-content h2 {
+    .place-title-row {
+        gap: 8px;
+    }
+
+
+    .place-title-row h2 {
         font-size: 22px;
 
-        margin-bottom: 8px;
+        margin-bottom: 0;
     }
 
 
@@ -553,211 +767,9 @@
     }
 
 
-    /* RATING */
-
-    .place-rating {
-        width: 100%;
-
-        margin-bottom: 12px;
-    }
-
-
-    .rating-star {
-        width: 27px;
-        height: 27px;
-
-        font-size: 21px;
-
-        line-height: 27px;
-    }
-
-
-    /* DESCRIPTION */
-
-    .place-description {
-        font-size: 15px;
-
-        line-height: 1.6;
-
-        text-align: center;
-    }
-
-
-    /* LOCATION */
-
-    .place-location {
-        font-size: 14px;
-
-        text-align: center;
-    }
-
-
-    /* BUTTON */
-
-    .map-button {
-        width: 100%;
-
-        margin-top: 18px;
-    }
-
-
-    /* EMPTY MESSAGE */
-
-    .no-places {
-        padding: 30px 15px;
-
-        font-size: 16px;
-    }
-
-}
-
-/* ============================= */
-/* PLACE TITLE + FAVORITE */
-/* ============================= */
-
-.place-title-row {
-    width: 100%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 12px;
-
-    margin-bottom: 8px;
-
-}
-
-
-.place-title-row h2 {
-    margin: 0;
-}
-
-
-/* ============================= */
-/* FAVORITE BUTTON */
-/* ============================= */
-
-.favorite-button {
-    width: 38px;
-
-    height: 38px;
-
-    padding: 0;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background-color: #f5f5f5;
-
-    color: #999999;
-
-    font-size: 25px;
-
-    line-height: 38px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    cursor: pointer;
-
-    transition:
-        color 0.2s ease,
-        background-color 0.2s ease,
-        transform 0.2s ease;
-}
-
-
-.favorite-button:hover {
-    color: #e67e22;
-
-    background-color: #fff2e8;
-
-    transform: scale(1.08);
-}
-
-
-.favorite-button.active {
-    color: #e67e22;
-
-    background-color: #fff2e8;
-}
-
-
-.favorite-button:disabled {
-    opacity: 0.6;
-
-    cursor: not-allowed;
-
-    transform: none;
-}
-
-
-/* ============================= */
-/* RATING VALUE */
-/* ============================= */
-
-.rating-value {
-    margin-left: 8px;
-
-    color: #666666;
-
-    font-size: 14px;
-
-    white-space: nowrap;
-}
-
-
-/* ============================= */
-/* ADDRESS */
-/* ============================= */
-
-.place-address {
-    margin: 8px 0 0;
-
-    color: #555555;
-
-    font-size: 14px;
-
-    line-height: 1.5;
-
-    text-align: center;
-}
-
-
-/* ============================= */
-/* TIMING */
-/* ============================= */
-
-.place-timing {
-    margin: 8px 0 0;
-
-    color: #555555;
-
-    font-size: 14px;
-
-    line-height: 1.5;
-
-    text-align: center;
-}
-
-
-/* ============================= */
-/* MOBILE FAVORITE */
-/* ============================= */
-
-@media (max-width: 600px) {
-
-    .place-title-row {
-        gap: 8px;
-    }
-
+    /* ============================= */
+    /* FAVORITE */
+    /* ============================= */
 
     .favorite-button {
         width: 34px;
@@ -770,10 +782,77 @@
     }
 
 
+    /* ============================= */
+    /* RATING */
+    /* ============================= */
+
+    .place-rating {
+        width: 100%;
+
+        margin-bottom: 12px;
+    }
+
+
+    .rating-star {
+        width: 27px;
+
+        height: 27px;
+
+        font-size: 21px;
+
+        line-height: 27px;
+    }
+
+
     .rating-value {
         font-size: 13px;
     }
 
-}
 
+    /* ============================= */
+    /* DESCRIPTION */
+    /* ============================= */
+
+    .place-description {
+        font-size: 15px;
+
+        line-height: 1.6;
+
+        text-align: center;
+    }
+
+
+    /* ============================= */
+    /* LOCATION */
+    /* ============================= */
+
+    .place-location {
+        font-size: 14px;
+
+        text-align: center;
+    }
+
+
+    /* ============================= */
+    /* BUTTON */
+    /* ============================= */
+
+    .map-button {
+        width: 100%;
+
+        margin-top: 18px;
+    }
+
+
+    /* ============================= */
+    /* EMPTY MESSAGE */
+    /* ============================= */
+
+    .no-places {
+        padding: 30px 15px;
+
+        font-size: 16px;
+    }
+
+}
 

@@ -80,7 +80,7 @@ function Places() {
 
 
     // ==========================================
-    // FETCH PLACES WHEN CATEGORY CHANGES
+    // FETCH PLACES
     // ==========================================
 
     useEffect(() => {
@@ -90,7 +90,7 @@ function Places() {
             category
         );
 
-    }, [category]);
+    }, [searchParams]);
 
 
     // ==========================================
@@ -284,7 +284,6 @@ function Places() {
                     : [];
 
 
-            // Remove duplicate IDs
             setFavoritePlaces(
                 [...new Set(favoriteIds)]
             );
@@ -317,7 +316,6 @@ function Places() {
             localStorage.getItem("token");
 
 
-        // Login required
         if (!token) {
 
             alert(
@@ -331,7 +329,6 @@ function Places() {
         }
 
 
-        // Prevent double click
         if (favoriteLoading[placeId]) {
 
             return;
@@ -423,6 +420,7 @@ function Places() {
 
 
             alert(
+                error.response?.data?.message ||
                 error.message ||
                 "Unable to update favorite."
             );
@@ -494,12 +492,6 @@ function Places() {
             }
         );
 
-
-        fetchPlaces(
-            value,
-            category
-        );
-
     };
 
 
@@ -548,12 +540,6 @@ function Places() {
             }
         );
 
-
-        fetchPlaces(
-            search,
-            value
-        );
-
     };
 
 
@@ -568,12 +554,6 @@ function Places() {
         setCategory("");
 
         setSearchParams({});
-
-
-        fetchPlaces(
-            "",
-            ""
-        );
 
     };
 
