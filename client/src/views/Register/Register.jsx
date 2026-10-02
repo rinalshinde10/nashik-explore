@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "../../components/Button/Button";
-
+import { useEffect } from "react";
 import "./Register.css";
 
 import showIcon from "../../assets/Icons/show.png";
@@ -12,7 +12,9 @@ import { registerUser } from "../../services/auth_service";
 
 
 function Register() {
-
+useEffect(() => {
+    window.scrollTo(0, 0);
+}, []);
     const navigate = useNavigate();
 
 

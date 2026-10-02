@@ -1,57 +1,85 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import "./Home.css";
-
-import Button from "../../components/Button/Button";
-
-import Heading from "../../components/Heading/Heading";
-import "../../components/Heading/Heading.css";
 
 import Cards from "../../components/Cards/Cards";
 import "../../components/Cards/Cards.css";
 
 import { getCategories } from "../../services/category_service";
 
+import templeIcon from "../../assets/Icons/temple.png";
+import waterfallIcon from "../../assets/Icons/waterfall.png";
+import fortIcon from "../../assets/Icons/fort.png";
+import historicIcon from "../../assets/Icons/historic.png";
+import vineyardsIcon from "../../assets/Icons/vineyards.png";
+import natureIcon from "../../assets/Icons/nature.png";
+
+import "./Home.css";
+
 
 function Home() {
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const navigate = useNavigate();
 
     const [categories, setCategories] = useState([]);
-
     const [loading, setLoading] = useState(true);
-
     const [error, setError] = useState("");
 
 
-    // ==========================================
+    // =========================
+    // CATEGORY ICONS
+    // =========================
+
+    const categoryIcons = {
+        "Temples": templeIcon,
+        "Waterfalls": waterfallIcon,
+        "Forts": fortIcon,
+        "Historical Places": historicIcon,
+        "Nature & Parks": natureIcon,
+        "Vineyards": vineyardsIcon
+    };
+
+
+    // =========================
     // FETCH CATEGORIES
-    // ==========================================
+    // =========================
 
     const fetchCategories = async () => {
 
         try {
 
             setLoading(true);
-
             setError("");
 
             const data = await getCategories();
 
-            console.log("Home Categories:", data);
+            if (Array.isArray(data)) {
 
-            setCategories(
-                Array.isArray(data.categories)
-                    ? data.categories
-                    : []
-            );
+                setCategories(data);
+
+            } else if (Array.isArray(data?.categories)) {
+
+                setCategories(data.categories);
+
+            } else if (Array.isArray(data?.data)) {
+
+                setCategories(data.data);
+
+            } else {
+
+                setCategories([]);
+
+            }
 
         } catch (error) {
 
             console.error(
                 "Error fetching categories:",
-                error.message
+                error
             );
 
             setError(
@@ -67,9 +95,9 @@ function Home() {
     };
 
 
-    // ==========================================
-    // INITIAL LOAD
-    // ==========================================
+    // =========================
+    // LOAD CATEGORIES
+    // =========================
 
     useEffect(() => {
 
@@ -78,9 +106,9 @@ function Home() {
     }, []);
 
 
-    // ==========================================
+    // =========================
     // CATEGORY CLICK
-    // ==========================================
+    // =========================
 
     const handleCategoryClick = (categoryId) => {
 
@@ -88,14 +116,16 @@ function Home() {
             return;
         }
 
-        navigate(`/places?category=${categoryId}`);
+        navigate(
+            `/places?category=${categoryId}`
+        );
 
     };
 
 
-    // ==========================================
-    // EXPLORE ALL PLACES
-    // ==========================================
+    // =========================
+    // EXPLORE PLACES
+    // =========================
 
     const handleExplorePlaces = () => {
 
@@ -106,69 +136,72 @@ function Home() {
 
     return (
 
-        <main className="home">
+        <div className="home">
 
 
-            {/* ==========================================
+            {/* =========================
                 HERO SECTION
-            ========================================== */}
+            ========================= */}
 
             <section className="hero-section">
 
                 <div className="hero-content">
 
                     <p className="hero-tag">
-                        EXPLORE • DISCOVER • EXPERIENCE
+                        DISCOVER • EXPLORE • EXPERIENCE
                     </p>
 
-
                     <h1>
-                        Discover the Beauty of
+                        Explore
                         <span> Nashik</span>
                     </h1>
 
-
                     <p className="hero-description">
-                        Explore temples, historical places,
-                        waterfalls, vineyards, forts and other
-                        beautiful destinations across Nashik.
+                        Discover temples, waterfalls, forts,
+                        historical places, vineyards and beautiful
+                        natural destinations in Nashik.
                     </p>
 
-
-                    <Button
+                    <button
                         className="explore-button"
                         onClick={handleExplorePlaces}
                     >
                         Explore Places
-                    </Button>
+                    </button>
 
                 </div>
 
             </section>
 
 
-            {/* ==========================================
+            {/* =========================
                 WELCOME SECTION
-            ========================================== */}
+            ========================= */}
 
             <section className="welcome-section">
 
                 <p className="section-label">
-                    WELCOME TO NASHIK
+                    WELCOME TO NASHIK EXPLORE
                 </p>
 
+                <h2>
+                    Discover the Beauty of Nashik
+                </h2>
 
-                <Heading
-                    title="Explore Nashik Like Never Before"
-                    subtitle="Nashik Explore helps you discover tourist attractions, historical places, natural destinations and memorable experiences across Nashik."
-                />
+                <p>
+                    Nashik is a beautiful city known for its
+                    temples, waterfalls, forts, historical places,
+                    vineyards and natural attractions.
+                    Nashik Explore helps you discover these
+                    amazing places easily.
+                </p>
 
             </section>
 
 
-            {/* ==========================================
+            {/* =========================
                 CATEGORIES SECTION
-            ========================================== */}
+            ========================= */}
 
             <section className="categories-section">
 
@@ -176,19 +209,20 @@ function Home() {
                     EXPLORE BY CATEGORY
                 </p>
 
+                <h2>
+                    Discover Places
+                </h2>
 
-                <Heading
-                    title="Discover Places Based on Your Interest"
-                    subtitle="Choose a category and explore the different places available in Nashik."
-                />
+                <p>
+                    Choose a category and explore interesting
+                    places in Nashik.
+                </p>
 
 
                 <div className="categories-container">
 
 
-                    {/* ==================================
-                        LOADING
-                    ================================== */}
+                    {/* LOADING */}
 
                     {loading && (
 
@@ -203,9 +237,7 @@ function Home() {
                     )}
 
 
-                    {/* ==================================
-                        ERROR
-                    ================================== */}
+                    {/* ERROR */}
 
                     {!loading && error && (
 
@@ -215,55 +247,69 @@ function Home() {
                                 {error}
                             </p>
 
-
-                            <Button
+                            <button
+                                type="button"
                                 onClick={fetchCategories}
                             >
                                 Try Again
-                            </Button>
+                            </button>
 
                         </div>
 
                     )}
 
 
-                    {/* ==================================
-                        REAL BACKEND CATEGORIES
-                    ================================== */}
+                    {/* CATEGORY CARDS */}
 
                     {!loading &&
                         !error &&
-                        categories.length > 0 && (
+                        categories.length > 0 &&
+                        categories.map((category) => {
 
-                            categories.map((category) => (
+                            const categoryId =
+                                category._id ||
+                                category.id;
+
+                            const categoryName =
+                                category.name ||
+                                "Category";
+
+                            const categoryDescription =
+                                category.description ||
+                                `Explore beautiful ${categoryName.toLowerCase()} places and destinations across Nashik.`;
+
+                            return (
 
                                 <Cards
-                                    key={category._id}
+                                    key={categoryId}
 
-                                    title={category.name}
+                                    title={categoryName}
 
                                     description={
-                                        category.description ||
-                                        `Explore beautiful ${category.name.toLowerCase()} places and destinations across Nashik.`
+                                        categoryDescription
                                     }
 
-                                    buttonText="Explore Category →"
+                                    icon={
+                                        categoryIcons[
+                                            categoryName
+                                        ]
+                                    }
+
+                                    buttonText="Explore Category"
 
                                     onClick={() =>
                                         handleCategoryClick(
-                                            category._id
+                                            categoryId
                                         )
                                     }
                                 />
 
-                            ))
+                            );
 
-                        )}
+                        })}
 
 
-                    {/* ==================================
-                        NO CATEGORIES
-                    ================================== */}
+                    {/* NO CATEGORIES */}
 
                     {!loading &&
                         !error &&
@@ -275,12 +321,12 @@ function Home() {
                                     No categories available.
                                 </p>
 
-
-                                <Button
+                                <button
+                                    type="button"
                                     onClick={fetchCategories}
                                 >
                                     Refresh
-                                </Button>
+                                </button>
 
                             </div>
 
@@ -291,72 +337,61 @@ function Home() {
             </section>
 
 
-            {/* ==========================================
+            {/* =========================
                 WHY NASHIK EXPLORE
-            ========================================== */}
+            ========================= */}
 
             <section className="why-section">
 
                 <p className="section-label">
-                    WHY NASHIK EXPLORE?
+                    WHY NASHIK EXPLORE
                 </p>
 
-
-                <Heading
-                    title="Everything You Need to Explore Nashik"
-                    subtitle="Discover places, explore categories and save your favorite destinations in one place."
-                />
+                <h2>
+                    Explore Nashik Easily
+                </h2>
 
 
                 <div className="features-container">
 
 
-                    {/* DISCOVER PLACES */}
-
                     <div className="feature-card">
 
                         <h3>
-                            Discover Places
+                            Easy Discovery
                         </h3>
 
                         <p>
-                            Find temples, historical places,
-                            nature spots, forts and other
-                            attractions across Nashik.
+                            Find different tourist places
+                            in Nashik according to categories.
                         </p>
 
                     </div>
 
 
-                    {/* EXPLORE CATEGORIES */}
-
                     <div className="feature-card">
 
                         <h3>
-                            Explore Categories
+                            Detailed Information
                         </h3>
 
                         <p>
-                            Find places easily by selecting
-                            a category according to your
-                            interests.
+                            Get useful information about
+                            places before visiting them.
                         </p>
 
                     </div>
 
 
-                    {/* REVIEWS */}
-
                     <div className="feature-card">
 
                         <h3>
-                            Read Reviews
+                            Explore Nashik
                         </h3>
 
                         <p>
-                            Check ratings and reviews to
-                            understand the experiences of
-                            other visitors.
+                            Discover temples, forts, waterfalls,
+                            vineyards and beautiful natural places.
                         </p>
 
                     </div>
@@ -367,7 +402,7 @@ function Home() {
             </section>
 
 
-        </main>
+        </div>
 
     );
 
@@ -375,3 +410,4 @@ function Home() {
 
 
 export default Home;
+

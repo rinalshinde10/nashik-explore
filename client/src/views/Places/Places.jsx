@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
@@ -80,14 +79,41 @@ function Places() {
 
 
     // ==========================================
-    // FETCH PLACES
+    // SCROLL TO TOP
     // ==========================================
 
     useEffect(() => {
 
+        window.scrollTo(0, 0);
+
+    }, []);
+
+
+    // ==========================================
+    // FETCH PLACES WHEN URL FILTER CHANGES
+    // ==========================================
+
+    useEffect(() => {
+
+        const searchValue =
+            searchParams.get("search") || "";
+
+        const categoryValue =
+            searchParams.get("category") || "";
+
+
+        // Keep states synchronized with URL
+
+        setSearch(searchValue);
+
+        setCategory(categoryValue);
+
+
+        // Fetch places using URL values
+
         fetchPlaces(
-            search,
-            category
+            searchValue,
+            categoryValue
         );
 
     }, [searchParams]);
@@ -1160,4 +1186,3 @@ function Places() {
 
 
 export default Places;
-

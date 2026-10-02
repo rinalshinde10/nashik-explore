@@ -3,7 +3,7 @@ import "./Login.css";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useEffect } from "react";
 import Button from "../../components/Button/Button";
 
 import { loginUser } from "../../services/auth_service";
@@ -13,7 +13,9 @@ import blindIcon from "../../assets/Icons/blind.png";
 
 
 function Login() {
-
+useEffect(() => {
+    window.scrollTo(0, 0);
+}, []);
     const navigate = useNavigate();
 
 

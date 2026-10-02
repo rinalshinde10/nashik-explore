@@ -129,7 +129,7 @@ function Navbar() {
                 to="/"
                 className="navbar-logo"
             >
-                Nashik Explore
+               <span className="navbar-logo-text1"> Nashik</span> <span >Explore</span>
             </Link>
 
 

@@ -17,7 +17,9 @@ import {
 
 
 function PlaceDetails() {
-
+useEffect(() => {
+    window.scrollTo(0, 0);
+}, []);
     const { id } = useParams();
 
     const navigate = useNavigate();
