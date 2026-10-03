@@ -9,7 +9,7 @@ import { useEffect } from "react";
 
 
 import DiscoverIcon from "../../assets/icons/discover.png";
-import SearchIcon from "../../assets/icons/search.png";
+import SearchIcon from "../../assets/icons/find.png";
 import RatingsIcon from "../../assets/icons/rating.png";
 import FavoritesIcon from "../../assets/icons/favorite.png";
 
