@@ -34,6 +34,7 @@ function About() {
                 "Easily search places by name and filter them according to their category.",
             icon: SearchIcon
         },
+        
         {
             title: "Ratings & Reviews",
             description:
