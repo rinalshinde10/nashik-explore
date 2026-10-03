@@ -8,8 +8,8 @@ import Button from "../../components/Button/Button";
 
 import { loginUser } from "../../services/auth_service";
 
-import showIcon from "../../assets/Icons/show.png";
-import blindIcon from "../../assets/Icons/blind.png";
+import showIcon from "../../assets/icons/show.png";
+import blindIcon from "../../assets/icons/blind.png";
 
 
 function Login() {

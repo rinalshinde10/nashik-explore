@@ -5,8 +5,8 @@ import Button from "../../components/Button/Button";
 import { useEffect } from "react";
 import "./Register.css";
 
-import showIcon from "../../assets/Icons/show.png";
-import blindIcon from "../../assets/Icons/blind.png";
+import showIcon from "../../assets/icons/show.png";
+import blindIcon from "../../assets/icons/blind.png";
 
 import { registerUser } from "../../services/auth_service";
 
