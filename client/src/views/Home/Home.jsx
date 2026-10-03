@@ -7,12 +7,12 @@ import "../../components/Cards/Cards.css";
 
 import { getCategories } from "../../services/category_service";
 
-import templeIcon from "../../assets/Icons/temple.png";
-import waterfallIcon from "../../assets/Icons/waterfall.png";
-import fortIcon from "../../assets/Icons/fort.png";
-import historicIcon from "../../assets/Icons/historic.png";
-import vineyardsIcon from "../../assets/Icons/vineyards.png";
-import natureIcon from "../../assets/Icons/nature.png";
+import templeIcon from "../../assets/icons/temple.png";
+import waterfallIcon from "../../assets/icons/waterfall.png";
+import fortIcon from "../../assets/icons/fort.png";
+import historicIcon from "../../assets/icons/historic.png";
+import vineyardsIcon from "../../assets/icons/vineyards.png";
+import natureIcon from "../../assets/icons/nature.png";
 
 import "./Home.css";
 
