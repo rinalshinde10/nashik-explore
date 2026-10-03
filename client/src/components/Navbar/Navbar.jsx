@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -9,20 +10,17 @@ import {
     logoutUser
 } from "../../services/auth_service";
 
-
 function Navbar() {
 
     const navigate = useNavigate();
-
 
     const [isLoggedIn, setIsLoggedIn] = useState(
         !!localStorage.getItem("token")
     );
 
-
-    // =============================
+    // =====================================
     // CHECK AUTH STATUS
-    // =============================
+    // =====================================
 
     useEffect(() => {
 
@@ -34,24 +32,20 @@ function Navbar() {
 
         };
 
-
         window.addEventListener(
             "authChanged",
             checkLoginStatus
         );
-
 
         window.addEventListener(
             "storage",
             checkLoginStatus
         );
 
-
         window.addEventListener(
             "focus",
             checkLoginStatus
         );
-
 
         return () => {
 
@@ -74,10 +68,9 @@ function Navbar() {
 
     }, []);
 
-
-    // =============================
+    // =====================================
     // LOGIN
-    // =============================
+    // =====================================
 
     const handleLogin = () => {
 
@@ -85,21 +78,9 @@ function Navbar() {
 
     };
 
-
-    // =============================
-    // REGISTER
-    // =============================
-
-    const handleRegister = () => {
-
-        navigate("/register");
-
-    };
-
-
-    // =============================
+    // =====================================
     // LOGOUT
-    // =============================
+    // =====================================
 
     const handleLogout = () => {
 
@@ -107,38 +88,36 @@ function Navbar() {
 
         setIsLoggedIn(false);
 
-        navigate("/login");
+        navigate("/");
 
     };
 
-
-    // =============================
+    // =====================================
     // JSX
-    // =============================
+    // =====================================
 
     return (
 
         <nav className="navbar">
 
-
-            {/* ============================= */}
             {/* LOGO */}
-            {/* ============================= */}
 
             <Link
                 to="/"
                 className="navbar-logo"
             >
-               <span className="navbar-logo-text1"> Nashik</span> <span >Explore</span>
+                <span className="navbar-logo-text1">
+                    Nashik
+                </span>
+
+                <span>
+                    Explore
+                </span>
             </Link>
 
-
-            {/* ============================= */}
             {/* NAVIGATION */}
-            {/* ============================= */}
 
             <div className="navbar-links">
-
 
                 {/* HOME */}
 
@@ -146,46 +125,11 @@ function Navbar() {
                     Home
                 </Link>
 
-
-                {/* PLACES */}
-
-                <Link to="/places">
-                    Places
-                </Link>
-
-
                 {/* ABOUT */}
 
                 <Link to="/about">
                     About
                 </Link>
-
-
-                {/* ============================= */}
-                {/* LOGGED OUT */}
-                {/* ============================= */}
-
-                {!isLoggedIn && (
-
-                    <>
-
-                        <Button
-                            onClick={handleLogin}
-                        >
-                            Login
-                        </Button>
-
-
-                        <Button
-                            onClick={handleRegister}
-                        >
-                            Register
-                        </Button>
-
-                    </>
-
-                )}
-
 
                 {/* ============================= */}
                 {/* LOGGED IN */}
@@ -193,10 +137,30 @@ function Navbar() {
 
                 {isLoggedIn && (
 
+                    <>
+                        <Link to="/places">
+                            Places
+                        </Link>
+
+                        <Button
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </Button>
+                    </>
+
+                )}
+
+                {/* ============================= */}
+                {/* LOGGED OUT */}
+                {/* ============================= */}
+
+                {!isLoggedIn && (
+
                     <Button
-                        onClick={handleLogout}
+                        onClick={handleLogin}
                     >
-                        Logout
+                        Login
                     </Button>
 
                 )}
@@ -206,8 +170,7 @@ function Navbar() {
         </nav>
 
     );
-
 }
 
-
 export default Navbar;
+

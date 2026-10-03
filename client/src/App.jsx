@@ -1,14 +1,31 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
+
 import Home from "./views/Home/Home";
 import Places from "./views/Places/Places";
 import PlaceDetails from "./views/PlaceDetails/PlaceDetails";
 import About from "./views/About/About";
 import Login from "./views/Login/Login";
-import Register from "./views/Register/Register";
-import Profile from "./views/Profile/Profile";
-                                                                                                                                                
+
+
+
+// =====================================
+// PROTECTED ROUTE
+// =====================================
+
+function ProtectedRoute({ children }) {
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        return <Navigate to="/login" replace />;
+    }
+
+    return children;
+}
 
 
 function App() {
@@ -39,10 +56,17 @@ function App() {
                     path="/"
                     element={<Home />}
                 />
-<Route
-    path="/about"
-    element={<About />}
-/>
+
+
+                {/* ============================= */}
+                {/* ABOUT */}
+                {/* ============================= */}
+
+                <Route
+                    path="/about"
+                    element={<About />}
+                />
+
 
                 {/* ============================= */}
                 {/* AUTHENTICATION */}
@@ -54,41 +78,35 @@ function App() {
                 />
 
 
-                <Route
-                    path="/register"
-                    element={<Register />}
-                />
-
-
                 {/* ============================= */}
-                {/* PLACES */}
+                {/* PLACES - LOGIN REQUIRED */}
                 {/* ============================= */}
 
                 <Route
                     path="/places"
-                    element={<Places />}
+                    element={
+                        <ProtectedRoute>
+                            <Places />
+                        </ProtectedRoute>
+                    }
                 />
 
 
                 {/* ============================= */}
-                {/* PLACE DETAILS */}
+                {/* PLACE DETAILS - LOGIN REQUIRED */}
                 {/* ============================= */}
 
                 <Route
                     path="/places/:id"
-                    element={<PlaceDetails />}
+                    element={
+                        <ProtectedRoute>
+                            <PlaceDetails />
+                        </ProtectedRoute>
+                    }
                 />
 
 
-                {/* ============================= */}
-                {/* USER PROFILE */}
-                {/* ============================= */}
-
-                <Route
-                    path="/profile"
-                    element={<Profile />}
-                />
-
+                
 
                 
 
@@ -108,5 +126,6 @@ function App() {
     );
 
 }
+
 export default App;
 

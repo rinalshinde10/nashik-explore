@@ -1,11 +1,6 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-
-import {
-    addFavorite,
-    getFavorites,
-    removeFavorite
-} from "../../services/favorite_service";
 
 import Button from "../../components/Button/Button";
 
@@ -35,9 +30,6 @@ function Places() {
 
     const [categories, setCategories] = useState([]);
 
-    const [favoritePlaces, setFavoritePlaces] =
-        useState([]);
-
     const [search, setSearch] = useState(
         searchParams.get("search") || ""
     );
@@ -61,9 +53,6 @@ function Places() {
     const [categoriesError, setCategoriesError] =
         useState("");
 
-    const [favoriteLoading, setFavoriteLoading] =
-        useState({});
-
 
     // ==========================================
     // INITIAL LOAD
@@ -72,8 +61,6 @@ function Places() {
     useEffect(() => {
 
         fetchCategories();
-
-        fetchFavoritePlaces();
 
     }, []);
 
@@ -117,49 +104,6 @@ function Places() {
         );
 
     }, [searchParams]);
-
-
-    // ==========================================
-    // AUTH CHANGE
-    // ==========================================
-
-    useEffect(() => {
-
-        const handleAuthChange = () => {
-
-            fetchFavoritePlaces();
-
-        };
-
-
-        window.addEventListener(
-            "authChanged",
-            handleAuthChange
-        );
-
-
-        window.addEventListener(
-            "storage",
-            handleAuthChange
-        );
-
-
-        return () => {
-
-            window.removeEventListener(
-                "authChanged",
-                handleAuthChange
-            );
-
-
-            window.removeEventListener(
-                "storage",
-                handleAuthChange
-            );
-
-        };
-
-    }, []);
 
 
     // ==========================================
@@ -268,207 +212,6 @@ function Places() {
         } finally {
 
             setCategoriesLoading(false);
-
-        }
-
-    };
-
-
-    // ==========================================
-    // FETCH FAVORITES
-    // ==========================================
-
-    const fetchFavoritePlaces = async () => {
-
-        const token =
-            localStorage.getItem("token");
-
-
-        if (!token) {
-
-            setFavoritePlaces([]);
-
-            return;
-
-        }
-
-
-        try {
-
-            const data =
-                await getFavorites();
-
-
-            const favoriteIds =
-                Array.isArray(data.favorites)
-                    ? data.favorites
-                        .map(
-                            (favorite) =>
-                                favorite.place?._id
-                        )
-                        .filter(Boolean)
-                    : [];
-
-
-            setFavoritePlaces(
-                [...new Set(favoriteIds)]
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Error fetching favorites:",
-                error.message
-            );
-
-
-            setFavoritePlaces([]);
-
-        }
-
-    };
-
-
-    // ==========================================
-    // FAVORITE
-    // ==========================================
-
-    const handleFavorite = async (
-        placeId
-    ) => {
-
-        const token =
-            localStorage.getItem("token");
-
-
-        if (!token) {
-
-            alert(
-                "Please login to add favorites."
-            );
-
-            navigate("/login");
-
-            return;
-
-        }
-
-
-        if (favoriteLoading[placeId]) {
-
-            return;
-
-        }
-
-
-        try {
-
-            setFavoriteLoading(
-                (previous) => ({
-
-                    ...previous,
-
-                    [placeId]: true
-
-                })
-            );
-
-
-            // ==================================
-            // REMOVE FAVORITE
-            // ==================================
-
-            if (
-                favoritePlaces.includes(placeId)
-            ) {
-
-                await removeFavorite(
-                    placeId
-                );
-
-
-                setFavoritePlaces(
-                    (previousFavorites) =>
-                        previousFavorites.filter(
-                            (id) =>
-                                id !== placeId
-                        )
-                );
-
-
-                return;
-
-            }
-
-
-            // ==================================
-            // ADD FAVORITE
-            // ==================================
-
-            await addFavorite(
-                placeId
-            );
-
-
-            setFavoritePlaces(
-                (previousFavorites) => {
-
-                    if (
-                        previousFavorites.includes(
-                            placeId
-                        )
-                    ) {
-
-                        return previousFavorites;
-
-                    }
-
-
-                    return [
-
-                        ...previousFavorites,
-
-                        placeId
-
-                    ];
-
-                }
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Favorite error:",
-                error.message
-            );
-
-
-            alert(
-                error.response?.data?.message ||
-                error.message ||
-                "Unable to update favorite."
-            );
-
-
-        } finally {
-
-            setFavoriteLoading(
-                (previous) => {
-
-                    const updated = {
-                        ...previous
-                    };
-
-
-                    delete updated[placeId];
-
-
-                    return updated;
-
-                }
-            );
 
         }
 
@@ -901,18 +644,6 @@ function Places() {
                                     );
 
 
-                                const isFavorite =
-                                    favoritePlaces.includes(
-                                        place._id
-                                    );
-
-
-                                const isFavoriteLoading =
-                                    !!favoriteLoading[
-                                        place._id
-                                    ];
-
-
                                 return (
 
                                     <div
@@ -925,49 +656,13 @@ function Places() {
                                         <div className="place-card-content">
 
 
-                                            {/* ==================================
-                                                NAME + FAVORITE
-                                            ================================== */}
+                                            {/* NAME */}
 
                                             <div className="place-title-row">
 
                                                 <h2>
                                                     {place.name}
                                                 </h2>
-
-
-                                                <button
-                                                    type="button"
-                                                    className={
-                                                        isFavorite
-                                                            ? "favorite-button active"
-                                                            : "favorite-button"
-                                                    }
-                                                    onClick={() =>
-                                                        handleFavorite(
-                                                            place._id
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        isFavoriteLoading
-                                                    }
-                                                    aria-label={
-                                                        isFavorite
-                                                            ? "Remove from favorites"
-                                                            : "Add to favorites"
-                                                    }
-                                                    title={
-                                                        isFavorite
-                                                            ? "Remove from favorites"
-                                                            : "Add to favorites"
-                                                    }
-                                                >
-
-                                                    {isFavorite
-                                                        ? "♥"
-                                                        : "♡"}
-
-                                                </button>
 
                                             </div>
 
@@ -1186,3 +881,4 @@ function Places() {
 
 
 export default Places;
+
