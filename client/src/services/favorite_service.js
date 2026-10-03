@@ -6,7 +6,7 @@ import axios from "axios";
 // API URL
 // =====================================
 
-const API_URL = "http://localhost:8080/api/favorites";
+const API_URL = "https://nashik-explore-api.onrender.com/api/favorites";
 
 
 // =====================================
